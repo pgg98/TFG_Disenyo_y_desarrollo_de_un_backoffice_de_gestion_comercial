@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Cfrontend</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/naxfavicon.png">
+
+    <!-- Custom CSS -->
+    <link href="./assets/libs/flot/css/float-chart.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="./assets/css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" />
+
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+
+    <app-root></app-root>
+
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="./assets/libs/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="./assets/libs/popper.js/dist/umd/popper.min.js"></script>
+    <script src="./assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="./assets/extra-libs/sparkline/sparkline.js"></script>
+    <!--Wave Effects -->
+    <script src="./assets/js/waves.js"></script>
+    <!--Menu sidebar -->
+    <script src="./assets/js/sidebarmenu.js"></script>
+    <!--Custom JavaScript -->
+    <script src="./assets/js/custom.min.js"></script>
+    <!--This page JavaScript -->
+    <!-- <script src="../../dist/js/pages/dashboards/dashboard1.js"></script> -->
+    <!-- Charts js Files -->
+    <script src="./assets/libs/flot/excanvas.js"></script>
+    <script src="./assets/libs/flot/jquery.flot.js"></script>
+    <script src="./assets/libs/flot/jquery.flot.pie.js"></script>
+    <script src="./assets/libs/flot/jquery.flot.time.js"></script>
+    <script src="./assets/libs/flot/jquery.flot.stack.js"></script>
+    <script src="./assets/libs/flot/jquery.flot.crosshair.js"></script>
+    <script src="./assets/libs/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+    <!--<script src="./assets/js/pages/chart/chart-page-init.js"></script>-->
+
+    <!-- Intento de meter el estilo de los selectores y datepickers -->
+    <script src="./assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="./assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="./assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="./assets/libs/quill/dist/quill.min.js"></script>
+    <script>
+        //***********************************//
+        // For select 2
+        //***********************************//
+        $(".select2").select2();
+  
+        /*colorpicker*/
+        // $(".demo").each(function () {
+        //   //
+        //   // Dear reader, it's actually very easy to initialize MiniColors. For example:
+        //   //
+        //   //  $(selector).minicolors();
+        //   //
+        //   // The way I've done it below is just for the demo, so don't get confused
+        //   // by it. Also, data- attributes aren't supported at this time...they're
+        //   // only used for this demo.
+        //   //
+        //   $(this).minicolors({
+        //     control: $(this).attr("data-control") || "hue",
+        //     position: $(this).attr("data-position") || "bottom left",
+  
+        //     change: function (value, opacity) {
+        //       if (!value) return;
+        //       if (opacity) value += ", " + opacity;
+        //       if (typeof console === "object") {
+        //       }
+        //     },
+        //     theme: "bootstrap",
+        //   });
+        // });
+        /*datwpicker*/
+        jQuery(".mydatepicker").datepicker();
+        jQuery("#datepicker-autoclose").datepicker({
+          autoclose: true,
+          todayHighlight: true,
+        });
+        // var quill = new Quill("#editor", {
+        //   theme: "snow",
+        // });
+    </script>
+</body>
+
+</html>
