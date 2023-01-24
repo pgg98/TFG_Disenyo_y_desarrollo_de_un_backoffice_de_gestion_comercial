@@ -1,0 +1,253 @@
+::ng-deep .mat-dialog-container {
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 95vh;
+  width: 200vh;
+}
+
+#content {
+  position: relative;
+  max-height: 95vh;
+  
+  i {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    color: rgb(175, 174, 174);
+    cursor: pointer;
+
+    &:hover {
+      color: red;
+      transform: scale(1.2);
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+}
+
+.content-title{
+  width: 100%;
+  height: 7.5%;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  text-align: center;
+}
+
+.btn-danger-flicker {
+  background-color: rgb(33, 126, 247);
+  border: none
+}
+
+
+.popover .arrow {
+  visibility: hidden;
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+mat-form-field {
+  margin: 1em 1em;
+}
+
+mat-error {
+  color: crimson;
+}
+
+#date-container {
+  display: flex;
+  align-items: center;
+
+  .form-control[readonly] {
+    background-color: #fff !important;
+  }
+}
+
+form > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 3em;
+  box-shadow: 0 0 10px rgb(206, 206, 206);
+  border-radius: 20px;
+  max-height: 80vh;
+  overflow-y: hidden;
+  overflow-x: auto;
+
+  div {
+    max-height: 60vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    & > mat-form-field:last-child {
+      grid-column: 2;
+    }
+  }
+
+  button {
+    margin-top: 2em;
+  }
+  button[disabled] {
+    background-color: rgb(151, 151, 151);
+    border-color: rgb(151, 151, 151);
+  }
+}
+
+.inputs{
+  height: 3.76vh;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+@media screen and (max-width: 700px) {
+  #content > form > div {
+    padding: 2em 1em;
+
+    & > div {
+      grid-template-columns: repeat(1, 1fr);
+
+      & > mat-form-field:last-child {
+        grid-column: 1;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1600px) {
+  form > div > div {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+// TABLE
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+  width: 100%;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+.borde{
+  border-color: rgb(21, 115, 230);
+  border-width: 1px;
+}
+
+.products-box{
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  align-items:unset;
+  align-content:flex-start;
+}
+
+.pointer{
+  :hover { cursor: pointer; background: rgb(197, 222, 240); border-color: rgb(6, 88, 202); border-width: 1px;}
+}
+
+.pointer_disabled{
+  :hover { cursor: not-allowed}
+}
+
+.product-item-disabled{
+  pointer-events: none;
+}
+
+.product-item{
+  border: 1px solid #b7b7b7;
+  background-color: #E9E9E9;
+  border-radius: 12px;
+  height: 40px;
+  width: auto;
+  margin-right: 20px;
+  display:flex;
+  flex-direction:row;
+  flex-wrap:nowrap;
+  justify-content:space-between;
+  align-items:center;
+  align-content:flex-start;
+  font-size: 0.9em;
+  input{
+    margin-right: 10px;
+
+  }
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.loadingClass{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap !important;
+}
+
+::ng-deep .mat-checkbox-layout{
+  margin-bottom: 0.25em;
+}
+
+@media screen and (max-height: 900px) {
+  .btn-lg {
+    padding: 0.5rem 1rem !important;
+    font-size: 2vh !important;
+    line-height: 1.5 !important;
+    border-radius: 0.3rem !important;
+  }
+
+}

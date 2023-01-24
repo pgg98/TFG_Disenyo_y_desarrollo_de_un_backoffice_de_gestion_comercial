@@ -1,0 +1,9 @@
+.link {
+  color: rgb(88, 88, 255) !important;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+
+.link:hover {
+  transform: scale(1.1);
+}

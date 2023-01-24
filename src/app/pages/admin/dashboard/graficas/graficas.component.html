@@ -1,0 +1,14 @@
+<h4>Gráficas</h4><br>
+
+<!-- ESTO TIENE QUE SER DINÁMICO -->
+<div class="row">
+
+    <div *ngFor="let grafica of graficas" class="card card-body col-md-6">
+        <h5>{{grafica.titulo}}</h5>
+
+        <app-line-chart *ngIf="grafica.tipo == 2" [donutData]=grafica.sets [donutLabels]=grafica.labels></app-line-chart> 
+
+        <app-donut-bar *ngIf="grafica.tipo == 1" [donutData]=grafica.sets [donutLabels]=grafica.labels></app-donut-bar>        
+    </div>
+        
+</div>

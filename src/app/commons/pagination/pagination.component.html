@@ -1,0 +1,49 @@
+<div [ngStyle]="{'margin-right':title == 'curvas' ? '5px' : '-15px'}" class="row">
+  <div *ngIf="showLimit">
+    <div class="select">
+      Items por pág
+      <div [ngClass]="{ 's-selected': true, 'select-disabled': limits.length === 0 || loading }" (click)="changeSelectSelected($event)">
+        {{ registrosPorPagina }}
+        <i *ngIf="!selectSelected && limits.length > 0" class="fa fa-angle-down"></i>
+        <i *ngIf="selectSelected && limits.length > 0" class="fa fa-angle-up"></i>
+      </div>
+      <div [ngClass]="{'op-content': true, 'op-content-top': true}" *ngIf="selectSelected">
+        <div [ngClass]="{'op-selected': element === registrosPorPagina}" *ngFor="let element of limits" (click)="changeSelectSelected($event, element)">
+          {{ element }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mx-3"  *ngIf="texto">
+    {{ (paginaActual - 1) * registrosPorPagina + 1 }} -
+    {{
+      ((paginaActual - 1) * registrosPorPagina + registrosPorPagina > totalRegistros) ?
+      totalRegistros :
+      (paginaActual - 1) * registrosPorPagina + registrosPorPagina
+    }}
+    de {{totalRegistros}}
+  </div>
+  <nav aria-label="Paginación">
+      <ul class="pagination justify-content-end m-0">
+          <li class="page-item" *ngIf="paginaActual > 2" [ngClass]="{'disabled' : paginaActual <= 1 || loading }" title="Página 1" (click)="cambiaPagina(1)">
+              <span class="page-link"><i class="fa fa-angle-double-left"></i></span>
+          </li>
+          <li class="page-item" *ngIf="paginaActual > 1" [ngClass]="{'disabled' : paginaActual <= 1 || loading }" [title]="'Página ' + (paginaActual - 1)" (click)="cambiaPagina(paginaActual - 1)">
+              <span class="page-link"><i class="fa fa-angle-left"></i></span>
+          </li>
+          <li class="page-item" [ngClass]="{'active': numeropagina === paginaActual, 'disabled' : loading}" [title]="'Página ' + (numeropagina)" *ngFor="let numeropagina of listaPaginas">
+              <span class="page-link" (click)="cambiaPagina(numeropagina)"> {{numeropagina}} </span>
+          </li>
+          <li class="page-item" *ngIf="paginaActual < ultimaPagina" [ngClass]="{'disabled' : paginaActual >= ultimaPagina || loading }"
+            [title]="'Página ' + (paginaActual + 1)"
+            (click)="cambiaPagina(paginaActual + 1)">
+              <span class="page-link"><i class="fa fa-angle-right"></i></span>
+          </li>
+          <li class="page-item" *ngIf="paginaActual < ultimaPagina - 1" [ngClass]="{'disabled' : paginaActual >= ultimaPagina || loading }"
+            [title]="'Página ' + (ultimaPagina)"
+            (click)="cambiaPagina(ultimaPagina)">
+              <span class="page-link"><i class="fa fa-angle-double-right"></i></span>
+          </li>
+      </ul>
+  </nav>
+</div>

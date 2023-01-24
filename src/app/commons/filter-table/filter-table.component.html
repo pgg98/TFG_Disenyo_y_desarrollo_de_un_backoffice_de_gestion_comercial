@@ -1,0 +1,71 @@
+<div id="content">
+  <!--<i class="fa fa-filter" title="Borrar filtro" (click)="clearAllFilter()"></i>-->
+  <!-- COLUMNAS DEL FILTRO-->
+  <div id="select-content">
+    <div [ngClass]="{'select': true, 'focus': selectSelected, 'select-disabled': (columns.length === 0 || disabled || loading) }">
+      <div [ngClass]="{ 's-selected': true, 'select-disabled': columns.length === 0 || disabled || loading}" (click)="(!loading) ? changeSelectSelected($event) : $event.stopPropagation();">
+        {{ (columnSelected) ? (columnSelected | columnName) : 'Seleccionar columna'}}
+        <i *ngIf="!selectSelected && columns.length > 0" class="fa fa-angle-down"></i>
+        <i *ngIf="selectSelected && columns.length > 0" class="fa fa-angle-up"></i>
+      </div>
+      <div [ngClass]="{'op-content': true}" *ngIf="selectSelected && !disabled">
+        <div [ngClass]="{'op-selected': element === columnSelected}" *ngFor="let element of columns" (click)="changeSelectSelected($event, element)">
+          {{ element | columnName }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- TIPOS DE INPUT -->
+  <div *ngIf="typeofColumns[columnSelected] === typesInColumns.BOOLEAN; else defaultInput"
+  class="input-radio">
+    <fieldset (keyup.enter)="filtrar()">
+      <label>
+        <i class="fa fa-check"></i>
+        <input type="radio" value="true" [(ngModel)]="inputFilter" [name]="columnSelected" checked>
+      </label>
+      <label>
+        <i class="fa fa-times"></i>
+        <input type="radio" value="false" [(ngModel)]="inputFilter" [name]="columnSelected">
+      </label>
+    </fieldset>
+  </div>
+  <ng-template #defaultInput>
+    <div
+    [ngClass]="{'focus': inputFocus, 'input d-flex align-items-center': true}"
+    (click)="focusInput($event)">
+      <i class="fa fa-search"></i>
+      <input *ngIf="typeofColumns[columnSelected] !== typesInColumns.DATE; else inputDate" #input (keyup.enter)="filtrar()" [disabled]="loading || !columnSelected || columnSelected === '' || disabled"
+      [type]="(typeofColumns[columnSelected] === typesInColumns.NUMBER) ? 'number' : tipoInput"
+      [placeholder]="(columnSelected) ? (columnSelected | columnName) : 'Filtro'"
+      (focus)="inputFocus = true;" (blur)="inputFocus = false;" [(ngModel)]="inputFilter">
+      <ng-template #inputDate>
+        <div class="d-flex align-items-center datepicker" style="margin: -0.2em 0;">
+          <input placeholder="dd/mm/yyyy"
+          readonly
+          [(ngModel)]="inputFilter"
+          style="cursor: pointer;"
+          matInput [matDatepicker]="picker" (focus)="picker.open()" (click)="picker.open()">
+          <mat-datepicker-toggle style="margin: -0.4em; width: 100%; display: flex; flex-direction: row-reverse;" matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </div>
+      </ng-template>
+    </div>
+  </ng-template>
+  <button [disabled]="loading" (click)="filtrar()">{{ (!columnSelected || (!inputFilter || inputFilter === '') || disabled) ? 'Refrescar' : 'Filtrar' }}</button>
+</div>
+<!-- MOSTRAR FILTRO ACTUAL -->
+<div id="filter-container" *ngIf="actualFilter">
+  <div class="filter-content">
+    <div class="filter" *ngFor="let column of (actualFilter['filtro'] | objectKeys)">
+      <b>{{ (column | showFilter | columnName ) + (column.includes('range') ? ' entre' : '') + ': ' }}</b>
+      {{ ((actualFilter['filtro'][column] !== true && actualFilter['filtro'][column]) ?
+      (actualFilter['filtro'][column] | isDate) ?
+      (actualFilter['filtro'][column] | date:"dd/MM/yyyy") :
+      actualFilter['filtro'][column] : '') }}
+      <i *ngIf="actualFilter['filtro'][column] === true" class="fa fa-check"></i>
+      <i *ngIf="!actualFilter['filtro'][column]" class="fa fa-times"></i>
+      <i class="fa fa-times close" (click)="clearFilter(column)"></i>
+    </div>
+  </div>
+  <button *ngIf="actualFilter" (click)="clearAllFilter()">Borrar filtros</button>
+</div>

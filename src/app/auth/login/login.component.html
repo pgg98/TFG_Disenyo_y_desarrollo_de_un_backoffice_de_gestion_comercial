@@ -1,0 +1,28 @@
+<div id="loginform">
+    <form class="form-horizontal" (ngSubmit)="login()" [formGroup]="loginForm">
+      <div id="title">
+        <img src="../../../assets/images/nax.png" height="200" />
+      </div>
+        <!-- formulario -->
+        <div class="row pa-2">
+            <div class="col-12">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-success text-white" id="basic-addon1"><i class=" fas fa-user-circle"></i></span>
+                    </div>
+                    <input type="text" class="form-control form-control-lg" formControlName="email" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" required="">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend" (click)="setPasswordVisible()">
+                        <span class="input-group-text bg-warning text-white" style="cursor: pointer;" id="basic-addon2"><i *ngIf="passwordVisible" class="fas fa-eye-slash"></i><i *ngIf="!passwordVisible" class="fas fa-eye"></i></span>
+                    </div>
+                    <input [type]="(passwordVisible) ? 'text' : 'password'" class="form-control form-control-lg" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" required="">
+                </div>
+            </div>
+        </div>
+        <!-- botones -->
+        <div class="row d-flex justify-content-center pt-4">
+          <button class="btn btn-dark float-right px-4" type="submit" [disabled]="!loginForm.valid"><i class="fas fa-spinner fa-spin m-r-10" *ngIf="waiting | async as waiting"></i>Login</button>
+        </div>
+    </form>
+</div>

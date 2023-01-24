@@ -1,0 +1,18 @@
+{
+    "object":{
+        "curve":{
+            "dds": "dds",
+            "corregir": "fix",
+            "id": "id",
+            "riego": "irrigation",
+            "mes": "month",
+            "producto": "product",
+            "soca": "rattle",
+            "rend": "rend",
+            "valores": "valores",
+            "variedad": "variety",
+            "zona_eco": "zone_eco",
+            "compare": "compare"
+        }
+    }
+}

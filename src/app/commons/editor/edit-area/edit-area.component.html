@@ -1,0 +1,33 @@
+<div id="content">
+  <i class="fa fa-times" (click)="closeTool()"></i>
+  <h3>Editar área {{ data.nombre }}</h3>
+  <form [formGroup]="areaForm" (ngSubmit)="editArea()" (keyup.enter)="editArea()">
+    <div>
+      <div>
+        <mat-form-field *ngFor="let control of (areaForm.controls | objectKeys)">
+          <mat-label>{{ control | columnName }}</mat-label>
+          <div id="date-container" *ngIf="control === 'fin_actualizacion'; else defaultInput">
+            <input class="inputs form-control" placeholder="dd/MM/yyyy" [formControlName]="control" input="date" style="cursor: pointer;" readonly [matDatepicker]="picker"
+            (focus)="picker.open()"
+            (click)="picker.open()">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </div>
+
+          <div id="date-container" style="overflow-x: inherit; overflow-y: inherit;" *ngIf="control === 'cultivo';">
+            <ng-select (change)="changeCultivo()" [formControlName]="control" class="inputs capitalize" style="width: 100%;" placeholder="Selecciona una opción">
+              <ng-option disabled [value]="null">Selecciona una opción</ng-option>
+              <ng-option *ngFor="let cultivo of cultivos" [value]="cultivo">{{ cultivo | dictionary }}</ng-option>
+            </ng-select>
+          </div>
+
+          <ng-template #defaultInput>
+            <input *ngIf="control != 'cultivo';" class="inputs form-control" [formControlName]="control" input="text" (input)="isDataChanged()" [placeholder]="(control | columnName) + '...'">
+          </ng-template>
+          <mat-error *ngIf="areaForm.get(control).invalid && areaForm.get(control).touched && firstClickEdit">{{ (control | columnName) + ' requerido' }}</mat-error>
+        </mat-form-field>
+      </div>
+      <button type="submit" [disabled]="(firstClickEdit && areaForm.invalid) || !isChangedData" class="btn btn-success btn-lg text-white">Editar</button>
+    </div>
+  </form>
+</div>

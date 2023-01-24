@@ -1,0 +1,43 @@
+.micursor:hover {
+  transform: scale(1.2);
+  background-color: transparent !important;
+}
+
+.nax {
+  color: white;
+  text-transform: uppercase;
+  font-weight: 1000;
+  font-size: 28px;
+  font-family: 'Trebuchet MS', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  letter-spacing:  8px;
+}
+
+.nax.naxcircle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 8px;
+  border-radius: 20px;
+  font-size: 8px;
+  letter-spacing:  2px;
+  border: 1px solid white;
+  color: white;
+  height: 40px;
+  width: 40px;
+}
+
+.hide-icon {
+  display: none;
+
+  img {
+    filter: invert(100%);
+  }
+}
+
+::ng-deep .notipanelclass{
+  max-height: 400px;
+  overflow-x: hidden;
+}
+::ng-deep  .mat-menu-panel.notipanelclass { max-width: 405px; }
+

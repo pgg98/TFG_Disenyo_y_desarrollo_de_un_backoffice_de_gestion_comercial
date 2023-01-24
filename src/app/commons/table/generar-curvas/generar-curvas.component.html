@@ -1,0 +1,243 @@
+<main id="main-generated-curves">
+    <!--------------- SECCIÓN PRINCIPAL CURVAS --------------->
+    <div *ngIf="!compareState" class="container-curves">
+
+        <!------------------ HEADER ---------------------->
+        <section id="title-curves-container">
+            <div style="display: flex;">
+                <div class="containerTitulo">
+                    <h1 mat-dialog-title class="titulo">Visualización de curvas</h1>
+                </div>
+                <div style="width: 44%;">
+                    <i class="fa fa-times" style="display: flex; float: right; color: #afaeae; cursor: pointer;" (click)="closeTool()"></i>
+                </div>
+            </div>
+            <div id="subtitle-container">
+                <div id="left-subtitle">
+                    <button (click)="processCurves();" [disabled]="!displayOptions" class="btn btn-info btn-left"><span>Procesar todo</span></button>
+                    <button class="button-display-options" [disabled]="loadingProcessesFilters | async" (click)="displayOptions = !displayOptions; $event.stopPropagation();">
+                    <span>Opciones de procesado</span>
+                    <mat-icon [ngClass]="{'icon-rotate': displayOptions}">arrow_drop_down</mat-icon>
+                    <mat-spinner *ngIf="loadingProcessesFilters | async"></mat-spinner>
+                    </button>
+                </div>
+                <div id="middle-subtitle">
+                  <div>
+                    <div (click)="curves_selection !== CurvesSelection.BBDD && changeVisibilityProcesses(); $event.stopPropagation()" [ngClass]="{'disabled-process-selector': curves_selection === CurvesSelection.BBDD || !processes?.length}">
+                        <span>{{ (selectedProcess && curves_selection !== CurvesSelection.BBDD) ? selectedProcess.name : 'Proceso' }}</span>
+                        <mat-icon *ngIf="processes?.length && curves_selection !== CurvesSelection.BBDD" [ngClass]="{'icon-rotate-x': displayProcessOptions}">arrow_drop_down</mat-icon>
+                        <div class="selector-process" *ngIf="displayProcessOptions">
+                          <ng-container *ngFor="let process of processes">
+                            <div (click)="selectedProcess?.id !== process.id && selectProcess(process); changeVisibilityProcesses(); $event.stopPropagation()" [ngClass]="{'selector-process-selected': selectedProcess && selectedProcess.id === process.id}">
+                              <span>{{ process.name }}</span>
+                            </div>
+                          </ng-container>
+                        </div>
+                    </div>
+                    <div>
+                        <span (click)="changeCurvesSelection(CurvesSelection.BBDD)"
+                        [ngClass]="{'selected-curves-selection': curves_selection === CurvesSelection.BBDD}"
+                        >{{ CurvesSelection.BBDD }}</span>
+                        <span (click)="changeCurvesSelection(CurvesSelection.TEMPORALES)"
+                        [ngClass]="{'selected-curves-selection': curves_selection === CurvesSelection.TEMPORALES}"
+                        >{{ CurvesSelection.TEMPORALES | titlecase }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div id="right-subtitle">
+                  <app-filter-curves [columns]="curves_selection === CurvesSelection.BBDD ? correctFiltersValuesBBDD : correctFiltersValuesTemporales"
+                  [filter]="actualFilter"
+                  (changeFilter)="changeFilter($event)"
+                  [loading]="loadingProcessesFilters | async"
+                  [disabled]="(loadingProcessesFilters | async) || loading_curves || (curves_selection === CurvesSelection.TEMPORALES && (!selectedProcess || !curvas)) ? true : false"></app-filter-curves>
+                </div>
+            </div>
+          <!------------------- FILTROS -------------------->
+          <section id="options-container" (click)="$event.stopPropagation();">
+            <!-- Pascu filtros -->
+            <div [ngClass]="{'options-opened': displayOptions }">
+              <ng-container *ngFor="let options of (process_filters | objectNoNullValues)">
+                <div *ngIf="options?.value?.length" class="input-options-container">
+                    <label>{{ (item | columnFiltersCurve:options.key:true) + '' | titlecase }}</label>
+                    <ng-select placeholder="Elige una opción"
+                    [multiple]="!['algoritmo', 'tipo'].includes(options.key)" [items]="options.value"
+                    [bindValue]="(options.key === 'areas') ? 'id' : '-'"
+                    [bindLabel]="(options.key === 'areas') ? 'titulo' : '-'"
+                    [selectableGroupAsModel]="false"
+                    [groupValue]="!['algoritmo', 'tipo'].includes(options.key) ? getGroupValue : '-'"
+                    [groupBy]="!['algoritmo', 'tipo'].includes(options.key) && (options?.value?.length > 1) ? groupByAll : null"
+                    [clearable]="false" [(ngModel)]="processFilterInput[options.key]" [closeOnSelect]="['algoritmo', 'tipo'].includes(options.key)"
+                    [selectableGroup]="!['algoritmo', 'tipo'].includes(options.key)">
+                    <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+                      <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{ (item | columnFiltersCurve:options.key:false) + '' | titlecase }}
+                    </ng-template>
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                      <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{ (item | columnFiltersCurve:options.key:false) + '' | titlecase }}
+                    </ng-template>
+                    </ng-select>
+                </div>
+              </ng-container>
+            </div>
+          </section>
+        </section>
+
+        <!------------------- CURVAS -------------------->
+        <div *ngIf="curvas?.datos.length > 0 && !loading_curves" style="min-height: 36em;">
+            <section id="curvas">
+                <ng-container *ngFor="let dataCurve of curvas.datos">
+                    <app-curvas
+                      (compare)="compare($event)"
+                      (close)="eliminatedCurve($event)"
+                      [curva]="dataCurve"
+                      [curveType]="curves_selection"
+                      [idArea]="area.id"
+                      [filtros]="actualFilter"
+                      [compareState]="compareState">
+                    </app-curvas>
+                </ng-container>
+            </section>
+        </div>
+
+        <section class="infoMessages" *ngIf="loading_curves">
+            <mat-spinner [ngClass]="{ 'small-spinner': messageLoading !== null }"></mat-spinner> <span>{{ messageLoading }}</span>
+        </section>
+
+        <section class="infoMessages" *ngIf="(!curvas || (curvas && curvas.datos == 0)) && !loading_curves">
+            <h2 *ngIf="curves_selection == 'BBDD'">No hay curvas para este área.</h2>
+            <h2 *ngIf="curves_selection == 'Temporales'">
+              <ng-container *ngIf="messageStatusProcess; else defaultMessageCurves">
+                <div class="message-status">
+                  <mat-spinner *ngIf="!['FAILURE', 'SUCCESS', 'OTHER'].includes(messageStatusProcess.status)"></mat-spinner>
+                  <span class="imp-message">{{ messageStatusProcess.message }}</span>
+                  <button (click)="selectedProcess && deleteTemporalProcess(selectedProcess.id)" class="btn btn-danger" *ngIf="'FAILURE' === messageStatusProcess.status">Borrar proceso</button>
+                </div>
+              </ng-container>
+              <ng-template #defaultMessageCurves>
+                No hay curvas para este proceso.
+              </ng-template>
+            </h2>
+        </section>
+
+        <section *ngIf="curvas?.datos.length > 0 && !loading_curves" class="paginationANDselectedCurves">
+            <div class="selectedCurves">
+                <span *ngIf="curves_selection == 'Temporales'">{{process_curves_checked?.length}} curvas seleccionadas</span>
+            </div>
+            <div class="selectedCurves" *ngIf="compare_total_curves | async as compare_total_curves">
+                <span *ngIf="curves_selection == 'Temporales'" class="footerBtn" style="color: red;">Tienes {{page_compared}} curvas por comparar en esta página ({{compare_total_curves}} en todo el proceso)</span>
+            </div>
+            <div style="margin-right: 0.9em;">
+                <app-pagination
+                [totalRegistros]="curvas?.objects"
+                [registrosPorPagina]="curvas?.limit"
+                [totalPages]="curvas?.total_pages"
+                [paginaActual]="page"
+                (cambiarPagina)="cambiarPagina($event)"
+                [showLimit]="false">
+                </app-pagination>
+            </div>
+        </section>
+
+
+        <!------------------- FOOTER -------------------->
+        <section id="footer" *ngIf="curvas?.datos.length > 0 && !loading_curves">
+            <!-- Pablo botones footer -->
+            <div class="left">
+                <button *ngIf="curves_selection === CurvesSelection.TEMPORALES" class="btn btn-dark footerBtn" [disabled]="page_compared==curvas?.datos.length" (click)="selectAll()">
+                    <span>Seleccionar toda la página</span>
+                </button>
+                <button *ngIf="curves_selection === CurvesSelection.BBDD && curvas?.datos.length" class="btn btn-danger text-white footerBtn" (click)="deleteAll()">
+                    <span>Eliminar todas</span>
+                </button>
+                <button *ngIf="curves_selection === CurvesSelection.BBDD && process_curves_checked?.length"
+                class="btn btn-dark text-white footerBtn d-flex align-center"
+                (click)="unselectAll()">
+                  <mat-icon class="mr-2">check_box</mat-icon>
+                  <span>Deselec. todas</span>
+                </button>
+                <button *ngIf="curves_selection === CurvesSelection.BBDD && process_curves_checked?.length" class="btn btn-dark text-white footerBtn"
+                (click)="reprocessDbCurves()">
+                  <span>Reprocesar selecc.</span>
+                </button>
+            </div>
+            <div *ngIf="curves_selection === CurvesSelection.TEMPORALES" class="right">
+                <div class="select-options" (click)="displayCompareSelect = !displayCompareSelect; $event.stopPropagation()">
+                  <button *ngIf="curves_selection === CurvesSelection.TEMPORALES" class="btn btn-dark text-white footerBtn">
+                    <span>{{ optionsCompareSelected | uppercase }}</span>
+                  </button>
+                  <button *ngIf="curves_selection === CurvesSelection.TEMPORALES" class="btn btn-dark text-white footerBtn btn-drop">
+                    <mat-icon [ngClass]="{ 'icon-rotate': displayCompareSelect }">arrow_drop_down</mat-icon>
+                  </button>
+                  <div class="options-inside" *ngIf="displayCompareSelect">
+                    <ng-container *ngFor="let value of (optionsCompareSelect | keyvalue)">
+                      <div (click)="optionsCompareSelected = value.value" [ngClass]="{'field-selected': value.value === optionsCompareSelected}">
+                        {{ value.value | uppercase }}
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              <button *ngIf="curves_selection === CurvesSelection.TEMPORALES"
+              class="btn btn-success text-white footerBtn change-disabled ml-3"
+              (click)="acceptClickEvent(optionsCompareSelected)"
+              [disabled]="(!process_curves_checked?.length && optionsCompareSelected === GenerarCurvasCompareOptions.SELECCIONADAS.valueOf()) ||
+              (!(compare_total_curves | async) && optionsCompareSelected === GenerarCurvasCompareOptions.COMPARADAS.valueOf()) ||
+              ((compare_total_curves | async) === curvas?.objects && optionsCompareSelected === GenerarCurvasCompareOptions.NO_COMPARADAS.valueOf())">
+                <span>Aceptar</span>
+              </button>
+              <button *ngIf="curves_selection === CurvesSelection.TEMPORALES"
+              class="btn btn-danger text-white footerBtn change-disabled"
+              (click)="discardClickEvent(optionsCompareSelected)"
+              [disabled]="!process_curves_checked?.length && optionsCompareSelected === GenerarCurvasCompareOptions.SELECCIONADAS.valueOf() ||
+              (!(compare_total_curves | async) && optionsCompareSelected === GenerarCurvasCompareOptions.COMPARADAS.valueOf()) ||
+              ((compare_total_curves | async) === curvas?.objects && optionsCompareSelected === GenerarCurvasCompareOptions.NO_COMPARADAS.valueOf())">
+                <span>Descartar</span>
+              </button>
+            </div>
+        </section>
+    </div>
+
+    <!--------------- COMPARAR CURVAS --------------------->
+    <div *ngIf="compareState" class="container-compare">
+        <section id="headerCompare">
+            <!-- Pablo titulo y boton atras -->
+            <div class="backBtn">
+                <button (click)="compareState=false" class="btn btn-dark footerBtn">
+                    <span>Atrás</span>
+                </button>
+            </div>
+            <div class="titleCompare">
+                <h3>Visualización de curvas</h3>
+            </div>
+        </section>
+        <section id="curvasCompare">
+            <!-- Pablo curvas comparar -->
+            <div>
+                <h3>Base de datos</h3>
+                <app-curvas
+                    (compare)="compare($event)"
+                    (closeCompare)="closeCompare()"
+                    [curva]="compareBDCurve"
+                    [curveType]="curves_selection"
+                    [idArea]="area.id"
+                    [filtros]="actualFilter"
+                    [process]="selectedProcess"
+                    [compareState]="compareState">
+                </app-curvas>
+                <button (click)="discardCompared()">Aceptar</button>
+            </div>
+            <div>
+                <h3>Nueva</h3>
+                <app-curvas
+                    (compare)="compare($event)"
+                    (close)="closeCompare()"
+                    [curva]="compareTemporaryCurve"
+                    [curveType]="curves_selection"
+                    [idArea]="area.id"
+                    [filtros]="actualFilter"
+                    [process]="selectedProcess"
+                    [compareState]="compareState">
+                </app-curvas>
+                <button (click)="acceptCompared()">Aceptar</button>
+            </div>
+        </section>
+    </div>
+</main>

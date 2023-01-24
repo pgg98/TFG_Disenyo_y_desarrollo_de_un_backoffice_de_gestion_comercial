@@ -1,0 +1,177 @@
+<div id="buttons-up-container" *ngIf="buttons?.includes(botonesTablaEnum.seleccionar) || buttons?.includes(botonesTablaEnum.crear) || buttons?.includes(botonesTablaEnum.superuser)">
+  <div class="card-body" *ngIf="showUsers">
+    <i class="fa fa-arrow-left" title="Volver" (click)="comeBackClients()"></i>
+  </div>
+  <div>
+    <button *ngIf="showUsers && buttons.includes(botonesTablaEnum.superuser)" class="button buttonSuper" title="Ver superusuario" (click)="showSuperUser()"><i class="fa fa-user-tie"></i></button>
+    <button *ngIf="!showUsers && rowsSelected.length === 0 && buttons.includes(botonesTablaEnum.crear)" (click)="openNewWindow()"><i class="fas fa-plus"></i>Crear {{ title | lowercase }}</button>
+    <button class="delete" *ngIf="!showUsers && buttons.includes(botonesTablaEnum.seleccionar) && rowsSelected.length > 0" (click)="sendRowsSelected()"><i class="fas fa-trash"></i> Eliminar seleccionados</button>
+  </div>
+</div>
+<div [ngClass]="{'height1': title != 'areas', 'height2': title == 'areas', 'height3': !(dangerFunction || warningFunction), 'table-responsive': true,'height4':title=='curvas'}" *ngIf="datos && datos.length > 0">
+<!--<div class="table-responsive" *ngIf="datos && datos.length > 0">-->
+  <table class="table">
+    <thead>
+      <tr>
+        <!-- CABECERAS -->
+        <th *ngFor="let column of columns" (click)="(!loading && !columnsNoChangeOrder.includes(column)) && changeOrder(column)" [ngClass]="{'ordered-disabled': loading || columnsNoChangeOrder.includes(column) }">
+          {{ (column === 'clientes') ? (column | titlecase) : (column | columnName) }}
+          <ng-container *ngIf="column !== 'clientes' && !columnsNoChangeOrder.includes(column)">
+            <i *ngIf="(orderedBy !== column && orderedBy !== '-' + column) || !orderedBy.includes('-')" [ngClass]="{'fa fa-angle-down': true, 'ordered-disabled': loading || (orderedBy !== column && orderedBy !== '-' + column) }"></i>
+            <i *ngIf="(orderedBy === column || orderedBy === '-' + column) && orderedBy.includes('-')" [ngClass]="{'fa fa-angle-up': true, 'ordered-disabled': loading }"></i>
+          </ng-container>
+        </th>
+        <th *ngIf="buttonsColumn && buttonsColumn.length > 0 && !buttons.includes(botonesTablaEnum.curvas)" class="sticky">Acciones</th>
+        <th *ngIf="buttons?.includes(botonesTablaEnum.curvas)" class="sticky"><input [disabled]="loadingCurvas" [checked]="allChecked" id="borraTodo" type="checkbox" class="btn btn-secondary btn-sm" (input)="selectCurva($event, [])"></th>
+      </tr>
+    </thead>
+    <tbody *ngIf="!loading">
+      <!-- FILAS -->
+      <tr *ngFor="let element of datos; let i = index; trackBy: trackById">
+        <ng-container *ngFor="let column of columns">
+          <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}"
+          *ngIf="element[column] | isStatusColumnTable; else defaultButtonView" [ngStyle]="{ 'color' : element[column].color }">
+            {{ element[column].status }} <i class="fas fa-copy copy-status" *ngIf="element[column].message"
+            title="Copiar"
+            popover="¡Copiado!"
+            popoverPlacement="right"
+            [popoverDismissTimeout]="1000"
+            [animation]="true"
+            [popoverOnHover]="false"
+            (click)="copyClipBoard(element[column].message)"></i>
+          </td>
+          <ng-template #defaultButtonView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}"
+            *ngIf="element[column] | isButtonTable; else playView">
+              <button class="btn btn-sm btn-dark" [disabled]="element[column].disabled" [title]="element[column].title" (click)="clickColumnButton(element)" [hidden]="element[column].hidden">{{ element[column].title }}</button>
+            </td>
+          </ng-template>
+          <ng-template #playView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction), 'button-view-image': true}" *ngIf="column.startsWith('link') && element[column]; else imageView" title="Ver vídeo" (click)="viewVideo(element[column])">
+              <i class="fas fa-play"></i>
+            </td>
+          </ng-template>
+          <ng-template #imageView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction), 'button-view-image': true}" *ngIf="column.includes('imagen') && element[column]; else clientsView" title="Ver imagen" (click)="viewImage(element[column])">
+              <i class="fas fa-eye"></i>
+            </td>
+          </ng-template>
+          <ng-template #clientsView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}"
+            [title]="(element[column] | showNameClients | slice:0:30) + ((element[column].length > 30) ? '...' : '')"
+            *ngIf="column.includes('clientes') && element[column]; else dateView">
+              {{ (element[column]) ? element[column].length : 0 }}
+            </td>
+          </ng-template>
+          <ng-template #dateView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction) }" *ngIf="(element[column] | isDate); else booleanView">{{ element[column] | date:"dd/MM/yyyy" }}</td>
+          </ng-template>
+          <ng-template #booleanView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}" *ngIf="(element[column] | typeof) === 'boolean'; else arrayView">
+              <i *ngIf="element[column]" class="fa fa-check"></i>
+              <i *ngIf="!element[column]" class="fa fa-times"></i>
+            </td>
+          </ng-template>
+          <ng-template #arrayView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}"
+            *ngIf="element[column] && (element[column] | isArray); else defaultView">
+              <span *ngFor="let key of element[column]">
+                {{ (key['id']) ? key['id'] : key  }}
+              </span>
+            </td>
+          </ng-template>
+          <ng-template #defaultView>
+            <td [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              {{ (element[column] && element[column].length > 45) ? (element[column] | slice:0:20) + '...' : '' }}
+              <i *ngIf="element[column] && element[column].length > 45" class="fas fa-eye button-icon" [title]="'Ver ' + (column | columnName)" (click)="showText(column, element[column])"></i>
+              {{ (element[column] && element[column].length <= 45) ? element[column] : '' }}
+              {{ ((element[column] | typeof) === 'number') ? element[column] : ''}}
+            </td>
+          </ng-template>
+        </ng-container>
+        <td *ngIf="buttonsColumn && buttonsColumn.length > 0" [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction), 'sticky': true }">
+          <div>
+            <div *ngIf="buttonsColumn.includes(botonesTablaEnum.editar)" [id]="'rowEdit-' + i" (click)="editRow($event)" title="Editar"
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <i class="fa fa-pencil-alt"></i>
+            </div>
+            <div *ngIf="buttonsColumn.includes(botonesTablaEnum.usuario)" title="Ver usuarios" [id]="'user-' + i" (click)="senClient($event)"
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <i class="fa fa-user"></i>
+            </div>
+            <div *ngIf="buttonsColumn.includes(botonesTablaEnum.convertir)" [id]="'rowConvetir-' + i" (click)="convertToDemo($event)" [title]="(nextTitle) ? 'Convertir a ' + nextTitle : 'Convertir'"
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <i class="fa fa-share-square"></i>
+            </div>
+            <div *ngIf="buttonsColumn.includes(botonesTablaEnum.terminado) && element.terminado === false && element.tienePoligonos" [id]="'rowTerminado-' + i"
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <button class="btn btn-success btn-sm" (click)="terminarArea(element)" title="Terminar">FIN</button>
+            </div>
+            <div *ngIf="buttons.includes(botonesTablaEnum.eliminar)" [id]="'rowEliminar-' + i" (click)="sendObjectDrop(element)" title="Eliminar"
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <i class="fas fa-trash" [ngStyle]="(!(element | warningRow:dangerFunction)) && {'color': 'rgb(180, 6, 6)'} || {'color': 'white'}"></i>
+            </div>
+            <!-- Desplegable de opciones para la tabla de áreas -->
+            <div *ngIf="buttons.includes(botonesTablaEnum.procCurvas)"
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <button style="border: none; background: none;" mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu class="areasMenu" #menu="matMenu">
+                <div class="wrapper">
+                  <div class="box porHacer">
+                      <div class="centradito"><i class="fas fa-calendar-alt"></i></div>
+                      <div class="centradito">Procesar históricos</div>
+                  </div>
+                  <div class="box" (click)="generarCurvas(element)">
+                      <div class="centradito"><i class="fas fa-chart-line"></i></div>
+                      <div class="centradito">Generar curvas</div>
+                  </div>
+                  <div class="box porHacer">
+                      <div class="centradito"><i class="fab fa-pagelines"></i></div>
+                      <div class="centradito">Reprocesar fechas</div>
+                  </div>
+                  <div (click)="asignarCurvas(element);" class="box">
+                      <div class="centradito"><i class="far fa-copy"></i></div>
+                      <div class="centradito">Asignar curvas</div>
+                  </div>
+                </div>
+              </mat-menu>
+            </div>
+            <div *ngIf="buttonsColumn.includes(botonesTablaEnum.seleccionar)" [id]="'select-' + i" disabled
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <input type="checkbox" class="btn btn-secondary btn-sm" (input)="changeRowsSelected($event, element)">
+            </div>
+            <!-- Checkboxs para la tabla de Curvas -->
+            <div *ngIf="buttons.includes(botonesTablaEnum.curvas)"  [id]="'select-' + element['id']" disabled
+            [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+              <input [id]="'checkbox-' + element['id']" type="checkbox" [checked]="element.checked" class="btn btn-secondary btn-sm" (input)="selectCurva($event, element)" [disabled]="loadingCurvas">
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<app-indeterminate-progress-bar *ngIf="loading"></app-indeterminate-progress-bar>
+<div class="pie" *ngIf="datos && datos.length > 0 && !disabledPagination">
+  <app-pagination
+    [totalRegistros]="objects"
+    [registrosPorPagina]="limit"
+    [totalPages]="totalPages"
+    [paginaActual]="page"
+    [title]="title"
+    (cambiarPagina)="cambiarPagina($event)"
+    (cambiarLimit)="cambiarLimit($event)"
+    ></app-pagination>
+  <!-- LEYENDA TABLAS -->
+  <div *ngIf="(dangerFunction || warningFunction) && data && datos && datos.length > 0" id="legend">
+    <div *ngIf="dangerFunction" class="danger-legend">
+      <i class="fa fa-square"></i> {{ dangerTitle }}
+    </div>
+    <div *ngIf="warningFunction" class="warning-legend">
+      <i class="fa fa-square"></i> {{ warningTitle }}
+    </div>
+  </div>
+</div>
+<div class="error" *ngIf="(!datos || (datos && datos.length === 0)) && !loading">No hay resultados.</div>

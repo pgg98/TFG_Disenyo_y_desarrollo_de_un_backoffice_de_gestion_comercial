@@ -1,0 +1,37 @@
+/**
+ * Donde se encuentra cada campo
+ * 0. raiz
+ * 1. CLIENTE
+ * 2. CONTACTO
+ */
+export enum TypeUserData {
+  CONTADOR_DASHBOARD = 0,
+  CONTADOR_LOGIN = 0,
+  CONTADOR_POWERBI = 0,
+  CONTADOR_TAREAS = 0,
+  LAST_LOGIN = 0,
+  USER = 0,
+  ALTA_FREQ = 1,
+  CATEGORY = 1,
+  CONTACTADO = 1,
+  CORREO = 1,
+  EMPRESA = 1,
+  FECHA_FINAL = 1,
+  FECHA_INICIAL = 1,
+  WORKSPACE = 1,
+  FIN_ACTUALIZACION = 1,
+  FIN_PLATAFORMA = 1,
+  HA_ACTIVAS_SENT = 1,
+  HA_CONTRAT = 1,
+  HA_CONTRAT_SENT = 1,
+  HA_EMPRESA = 1,
+  LANGUAGE = 2,
+  METODO_PAGO = 1,
+  PAGADO = 1,
+  NOMBRE = 2,
+  APELLIDOS = 2,
+  CULTIVO = 2,
+  EMAIL = 2,
+  PAIS = 2,
+  PHONE = 2
+}

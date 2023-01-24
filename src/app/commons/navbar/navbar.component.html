@@ -1,0 +1,35 @@
+<header class="topbar" data-navbarbg="skin5">
+    <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+        <!-- LOGO -->
+        <div class="navbar-header">
+            <a class="nav-toggler waves-effect waves-light d-block d-md-none"><i class="fa fa-bars font-24" style="color: white;"></i></a>
+            <a class="navbar-brand" style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                <b class="hide-icon ps-2">
+                  <img height="60" src="../../../assets/images/nax.png"/>
+                </b>
+                <span class="logo-text">
+                    <div class="nax">nax</div>
+                </span>
+            </a>
+            <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fa fa-ellipsis-h"></i></a>
+        </div>
+        <!-- TOOLS -->
+        <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
+            <ul class="navbar-nav float-left mr-auto">
+                <li class="nav-item d-none d-md-block">
+                    <a class="nav-link sidebartoggler waves-effect waves-light" href="javascript:void(0)" data-sidebartype="mini-sidebar"><i class="fa fa-bars font-24"></i></a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav float-right" style="display: flex; flex-direction: row; align-items: end;">
+                <li class="nav-item dropdown" *ngIf="{areas: not_processing_areas | async} as not_processing" (click)="openWarning([], not_processing.areas)">
+                    <mat-icon *ngIf="not_processing.areas" matBadge="{{not_processing.areas.length}}" matBadgeColor="warn" style="color: white; cursor: pointer;">report</mat-icon>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="dropdown-item micursor" (click)="logout()" title="Cerrar sesión"><i class="fa fa-power-off m-r-5 m-l-5" style="color: white;"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

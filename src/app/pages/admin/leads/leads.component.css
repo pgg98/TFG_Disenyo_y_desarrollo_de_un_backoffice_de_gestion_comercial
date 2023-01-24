@@ -1,0 +1,11 @@
+.fa {
+  cursor: pointer;
+}
+
+.fa:hover {
+  transform: scale(1.3);
+}
+
+.fa:active {
+  transform: translateY(1px);
+}

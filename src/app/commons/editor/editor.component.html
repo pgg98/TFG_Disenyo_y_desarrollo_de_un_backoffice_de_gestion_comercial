@@ -1,0 +1,817 @@
+<div id="container-editor">
+<form *ngIf="clienteInfo || isNew" [formGroup]="todoForm" (keydown.enter)="$event.preventDefault()">
+<!-- TABS -->
+<mat-tab-group (selectedTabChange)="onTabChange($event);" [(selectedIndex)]="tab">
+    <!-- INFORMACION GENERAL -->
+    <mat-tab *ngIf="type==1 || type==2 || type==3" label="First">
+        <ng-template mat-tab-label>
+            <mat-icon style="margin-right: 0.5em; font-size: 22px;">info</mat-icon>
+            Información
+        </ng-template>
+        <div class="movil" style="height: 72vh; overflow-y:auto; overflow-x:hidden; margin-bottom: 1vh;">
+            <h5 *ngIf="type==1 || isNew">Contacto</h5>
+            <div class="row" *ngIf="isNew">
+              <!-- datos opcionales de formulario si es de nuevo -->
+              <mat-form-field class="col-lg-6" style="flex-direction: column; text-align: left;">
+                <!-- USUARIO -->
+                <mat-label>Usuario</mat-label>
+                <input class="inputs form-control" formControlName="user" type="text"
+                placeholder="Usuario*"
+                (keyup)="checkUser(todoForm.get('user').value, 'user')">
+                <mat-error *ngIf="todoForm.controls['user'].invalid && todoForm.controls['user'].touched" class="">
+                  <span style="color:crimson; margin-left: 0.5em;">Usuario no válido</span>
+                </mat-error>
+                <mat-hint *ngIf="checkUserValue" style="color:crimson; margin-left: 0.5em;">Usuario ya existente</mat-hint>
+              </mat-form-field>
+              <mat-form-field class="col-lg-6" style="flex-direction: column; text-align: left;">
+                <!-- PASSWORD -->
+                <mat-label>Contraseña</mat-label>
+                <input class="inputs form-control" formControlName="password" type="password" placeholder="Contraseña*">
+                <mat-error *ngIf="todoForm.controls['password'].invalid && todoForm.controls['password'].touched">
+                  <span style="color:crimson; margin-left: 0.5em;">
+                    <!--mensajes de error según lo que quede por hacer en el password -->
+                  {{
+                    (todoForm.get('password').hasError('required')) ? 'Contraseña requerida' :
+                    (todoForm.get('password').hasError('minlength')) ? 'Debe contener al menos 8 caracteres' :
+                    (todoForm.get('password').hasError('contieneCaracter')) ? 'Debe contener al menos una letra' :
+                    (todoForm.get('password').hasError('contieneMayuscula')) ? 'Debe contener al menos una letra mayúscula' :
+                    (todoForm.get('password').hasError('contieneDigito')) ? 'Debe contener al menos un dígito' :
+                    (todoForm.get('password').hasError('contieneCaracteresEspeciales')) ? 'Debe contener al menos *, @, !, $, #' :
+                    (todoForm.get('password').hasError('required')) ? 'Contraseña requerida' :
+                     ''
+                  }}
+                  </span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div *ngIf="type==1 || isNew" class="row mb-3">
+
+                <div class="col-lg-4">
+                    <mat-form-field>
+                      <!-- EMAIL -->
+                        <mat-label>Email</mat-label>
+                        <input type="text" class="inputs form-control" placeholder="Email*"
+                        formControlName="email" (keyup)="checkUser(todoForm.get('email').value, 'email')" />
+                        <mat-error *ngIf="todoForm.controls['email'].invalid && (!isNew || todoForm.controls['email'].touched) && !checkEmailValue">
+                            <span style="color:crimson; margin-left: 0.5em;">Email no válido</span>
+                        </mat-error>
+                      <mat-hint *ngIf="checkEmailValue" style="color:crimson; margin-left: 0.5em;">Email ya existente</mat-hint>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-4 d-flex w-100">
+                    <!-- CÓDIGO TELÉFONO INPUT -->
+                    <mat-form-field style="width: 50%;">
+                        <mat-label>Código</mat-label>
+                          <ng-select style=" width: 100%;" class="inputs" (ngModelChange)="changePhoneCode($event)"
+                          formControlName="codePhone" placeholder="Elige un código*"
+                          (focusout)="clearKeysCountriesFilter($event)">
+                              <ng-option *ngFor="let key of this.keysCountriesFilter" [value]="key">
+                              {{ countries[key].emoji + ' +' + (countries[key].phone | phoneCode)[1] + ' - ' + countries[key].name }}
+                              </ng-option>
+                          </ng-select>
+                        <mat-error *ngIf="todoForm.controls['codePhone'].invalid &&
+                        (!isNew || todoForm.controls['codePhone'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Selecciona un código</span>
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- TELÉFONO INPUT -->
+                    <mat-form-field id="tel-input" style="width: 50%;">
+                        <mat-label>Teléfono</mat-label>
+                        <input class="inputs form-control" (keypress)="controlTel($event)"
+                        (keyup)="addSeparador($event)" formControlName="phone" id="phone" type="tel" name="phone"
+                        [placeholder]="phoneFormat || 'Teléfono*'">
+                        <mat-hint *ngIf="todoForm.controls['phone'].invalid &&
+                        (!isNew || todoForm.controls['phone'].touched)">* Formato de teléfono no válido {{(this.phoneFormat) ? '(' + this.phoneFormat + ')' : '' }}</mat-hint>
+                    </mat-form-field>
+                </div>
+
+                <mat-form-field class="col-lg-4">
+                    <!-- IDIOMA -->
+                    <mat-label>Idioma</mat-label>
+                    <ng-select formControlName="language" class="inputs capitalize" style="width: 100%;" placeholder="Elige un idioma*">
+                        <ng-option *ngFor="let language of (languages | keyvalue)" [value]="language.key">
+                          {{ language.value }}
+                      </ng-option>
+                    </ng-select>
+                    <mat-error *ngIf="todoForm.controls['language'].invalid
+                    && (!isNew || todoForm.controls['language'].touched)">
+                        <span style="color:crimson; margin-left: 0.5em;">Selecciona un idioma</span>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="type==1 || isNew"  class="row mb-3">
+                <div class="col-lg-4">
+                  <!-- NOMBRE -->
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+                        <input type="text" class="inputs form-control" placeholder="Nombre*" formControlName="nombre" />
+                        <mat-error *ngIf="todoForm.controls['nombre'].invalid && (!isNew || todoForm.controls['nombre'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Nombre no válido</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4">
+                  <!-- APELLIDOS -->
+                    <mat-form-field>
+                        <mat-label>Apellidos</mat-label>
+                        <input type="text" class="inputs form-control" placeholder="Apellidos*" formControlName="apellidos" />
+                        <mat-error *ngIf="todoForm.controls['apellidos'].invalid && (!isNew || todoForm.controls['apellidos'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Apellidos no válidos</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4">
+                    <mat-form-field>
+                      <!-- PAIS SELECT -->
+                        <mat-label>País</mat-label>
+                        <ng-select style="width: 100%;" formControlName="pais" class="inputs" placeholder="Elige un país*"
+                        (ngModelChange)="clearKeysCountriesFilter($event)" (focusout)="clearKeysCountriesFilter($event)">
+                            <ng-option [ngValue]="null" disabled>Elige un pais</ng-option>
+                            <ng-option *ngFor="let key of keysCountriesFilter" [value]="countries[key].name">
+                            {{ countries[key].name }}
+                            </ng-option>
+                        </ng-select>
+                        <mat-error *ngIf="todoForm.controls['pais'].invalid && (!isNew || todoForm.controls['pais'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Selecciona un país</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <h5>Datos de interés y fechas</h5>
+            <div class="row mb-3">
+                <div *ngIf="type==1 || isNew" class="col-lg-4">
+                    <mat-form-field>
+                      <!-- CULTIVO -->
+                        <mat-label>Cultivo</mat-label>
+                        <ng-select formControlName="cultivo" placeholder="Elige un cultivo*" class="inputs capitalize" style="width: 100%;">
+                            <ng-option *ngFor="let cultivo of cultivos" [value]="cultivo" class="capitalize">
+                                {{ cultivo | dictionary }}
+                            </ng-option>
+                        </ng-select>
+                        <mat-error *ngIf="todoForm.controls['cultivo'].invalid
+                        && (!isNew || todoForm.controls['cultivo'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Selecciona un cultivo</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4">
+                    <mat-form-field>
+                        <!-- HECTÁREAS -->
+                        <mat-label>Hectáreas de la empresa</mat-label>
+                        <input type="number" class="inputs form-control" placeholder="Hectáreas de la empresa*" formControlName="ha_empresa"
+                        onKeyPress="if(this.value.length==6) return false;" max="999999" min="0" />
+                        <mat-error *ngIf="todoForm.controls['ha_empresa'].invalid && (!isNew || todoForm.controls['ha_empresa'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Hectáreas no válidas</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4">
+                    <mat-form-field>
+                        <!-- EMPRESA -->
+                        <mat-label>Empresa</mat-label>
+                        <input type="text" class="inputs form-control" placeholder="Empresa*" formControlName="empresa" />
+                        <mat-error *ngIf="todoForm.controls['empresa'].invalid && (!isNew || todoForm.controls['empresa'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Empresa no válida</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <mat-form-field class="col-lg-4" *ngIf="(type==2 || type==3) && !isNew" >
+                    <!-- IDIOMA -->
+                    <mat-label>Idioma</mat-label>
+                    <ng-select formControlName="language" class="inputs capitalize" placeholder="Elige un idioma*" style="width: 100%;">
+                        <ng-option *ngFor="let language of (languages | keyvalue)" [value]="language.key">
+                          {{ language.value }}
+                      </ng-option>
+                    </ng-select>
+                    <mat-error *ngIf="todoForm.controls['language'].invalid
+                    && (!isNew || todoForm.controls['language'].touched)">
+                        <span style="color:crimson; margin-left: 0.5em;">Selecciona un idioma</span>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div *ngIf="type==1" class="row mb-3">
+                <div class="col-lg-4">
+                  <!-- VERIFICADO CHECK -->
+                    <mat-label>Verificado</mat-label>
+                    <fieldset style="display: flex;">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input"
+                                id="customControlValidation1" name="verificado" [value]="true" formControlName="verificado" required/>
+                            <label class="form-check-label mb-0" for="customControlValidation1">Si</label>
+                        </div>
+                        <div style="margin-left: 1em;" class="form-check">
+                            <input type="radio" class="form-check-input"
+                                id="customControlValidation2" name="verificado" [value]="false" formControlName="verificado" required/>
+                            <label class="form-check-label mb-0" for="customControlValidation2">No</label>
+                        </div>
+                  </fieldset>
+                </div>
+                <div class="col-lg-4">
+                  <!-- CONTACTADO CHECK -->
+                    <mat-label>Contactado</mat-label>
+                    <fieldset style="display: flex;">
+                        <div class="form-check">
+                            <input type="radio" name="contactado" [value]="true" formControlName="contactado" class="form-check-input"
+                                id="customControlValidation3" required/>
+                            <label class="form-check-label mb-0" for="customControlValidation3">Si</label>
+                        </div>
+                        <div style="margin-left: 1em;" class="form-check">
+                            <input type="radio" name="contactado" [value]="false" formControlName="contactado" class="form-check-input"
+                                id="customControlValidation4" required/>
+                            <label class="form-check-label mb-0" for="customControlValidation4">No</label>
+                        </div>
+                  </fieldset>
+                </div>
+                <div class="col-lg-4" *ngIf="type == 1 || isNew">
+                  <!-- FECHA REGISTRO -->
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fecha registro</mat-label>
+                        <input class="inputs form-control" [value]="(clienteInfo) ? clienteInfo.fecha_registro : today" matInput [matDatepicker]="picker" disabled>
+                        <!--<mat-error *ngIf="todoForm.controls['fecha_registro'].invalid && (!isNew || todoForm.controls['fecha_registro'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Fecha registro no válida</span>
+                        </mat-error>-->
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div *ngIf="type==2 || type==3" class="row mb-3">
+                <div class="col-lg-4">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fecha vencimiento</mat-label>
+                        <div class="d-flex align-items-center">
+                          <input placeholder="Fecha vencimiento*" class="inputs form-control" formControlName="fin_plataforma"
+                          style="cursor: pointer;"
+                          matInput [matDatepicker]="picker4" (focus)="picker4.open()" (click)="picker4.open()">
+                          <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                          <mat-datepicker #picker4></mat-datepicker>
+                        </div>
+                        <mat-error *ngIf="todoForm.controls['fin_plataforma'].invalid && (!isNew || todoForm.controls['fin_plataforma'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Fecha no válida</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-4">
+                  <!-- FIN ACTUALIZACION -->
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fin actualización</mat-label>
+                        <div class="d-flex align-items-center">
+                          <input class="inputs form-control" placeholder="Fin actualización*" formControlName="fin_actualizacion"
+                          style="cursor: pointer;"
+                          matInput [matDatepicker]="picker3" (focus)="picker3.open()" (click)="picker3.open()">
+                          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                          <mat-datepicker #picker3></mat-datepicker>
+                        </div>
+                        <mat-error *ngIf="todoForm.controls['fin_actualizacion'].invalid && (!isNew || todoForm.controls['fin_actualizacion'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Fecha no válida</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-4" *ngIf="type == 1 || isNew">
+                  <!-- FECHA REGISTRO -->
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fecha registro</mat-label>
+                        <input class="inputs form-control mt-1" [value]="(clienteInfo) ? clienteInfo.fecha_registro : today" disabled matInput [matDatepicker]="picker2">
+                        <!--<mat-error *ngIf="todoForm.controls['fecha_registro'].invalid && (!isNew || todoForm.controls['fecha_registro'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Fecha no válida</span>
+                        </mat-error>-->
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-4" *ngIf="(type == 2 || type == 3) && !isNew">
+                  <!-- DESCARGAR RASTER CHECK -->
+                    <mat-label>Descargar raster</mat-label>
+                    <fieldset style="display: flex;">
+                      <div class="form-check">
+                          <input type="radio" name="descargar_raster" [value]="true" formControlName="descargar_raster" class="form-check-input" id="customControlValidation17"/>
+                          <label class="form-check-label mb-0" for="customControlValidation17">Si</label>
+                      </div>
+                      <div style="margin-left: 1em;" class="form-check">
+                          <input type="radio" name="descargar_raster" [value]="false" formControlName="descargar_raster" class="form-check-input" id="customControlValidation15"/>
+                          <label class="form-check-label mb-0" for="customControlValidation15">No</label>
+                      </div>
+                  </fieldset>
+                </div>
+            </div>
+
+            <h5 *ngIf="type==3">Hectáreas</h5>
+            <div *ngIf="type==3" class="row mb-3">
+
+
+                <div class="col-lg-4">
+                  <!-- ALTA FRECUENCIA CHECK -->
+                    <mat-label>Alta frecuencia</mat-label>
+                    <fieldset style="display: flex;">
+                      <div class="form-check">
+                          <input type="radio" name="alta_freq" [value]="true" formControlName="alta_freq" class="form-check-input" id="customControlValidation7"
+                            (change)="changeValidatorHaContract()"/>
+                          <label class="form-check-label mb-0" for="customControlValidation7">Si</label>
+                      </div>
+                      <div style="margin-left: 1em;" class="form-check">
+                          <input type="radio" name="alta_freq" [value]="false" formControlName="alta_freq" class="form-check-input" id="customControlValidation8"
+                          (change)="changeValidatorHaContract()"/>
+                          <label class="form-check-label mb-0" for="customControlValidation8">No</label>
+                      </div>
+                  </fieldset>
+                </div>
+
+                <!-- HECTÁREAS DE PLANET -->
+                <div class="col-lg-4">
+                    <mat-label>Hectáreas contratadas de planet</mat-label>
+                    <input [readonly]="!todoForm.get('alta_freq').value" type="number" class="inputs form-control" placeholder="Hectáreas contratadas de planet*"
+                        formControlName="ha_contrat" onKeyPress="if(this.value.length==6) return false;"/>
+                        <mat-error *ngIf="todoForm.controls['ha_contrat'].invalid && (!isNew || todoForm.controls['ha_contrat'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Hectáreas no válidas</span>
+                    </mat-error>
+                </div>
+
+                <!-- HECTÁREAS CONTRATADAS -->
+                <div class="col-lg-4">
+                    <mat-label>Hectáreas contratadas de sentinel</mat-label>
+                    <input type="number" class="inputs form-control" placeholder="Hectáreas contratadas de sentinel*"
+                        formControlName="ha_contrat_sent" onKeyPress="if(this.value.length==6) return false;"/>
+                        <mat-error *ngIf="todoForm.controls['ha_contrat_sent'].invalid && (!isNew || todoForm.controls['ha_contrat_sent'].touched)">
+                            <span style="color:crimson; margin-left: 0.5em;">Hectáreas no válidas</span>
+                    </mat-error>
+                </div>
+            </div>
+
+            <h5 *ngIf="type==3">Pago</h5>
+            <div *ngIf="type==3" class="row mb-3">
+              <!-- PAGADO CHECK -->
+                <div class="col-lg-6">
+                    <mat-label>Pagado</mat-label>
+                    <fieldset style="display: flex;">
+                        <div class="form-check">
+                            <input type="radio" name="pagado" [value]="true" formControlName="pagado" class="form-check-input" id="customControlValidation5"
+                                required/>
+                            <label class="form-check-label mb-0" for="customControlValidation5">Si</label>
+                        </div>
+                        <div style="margin-left: 1em;" class="form-check">
+                            <input type="radio" name="pagado" [value]="false" formControlName="pagado" class="form-check-input" id="customControlValidation6"
+                             required />
+                            <label class="form-check-label mb-0" for="customControlValidation6">No</label>
+                        </div>
+                      </fieldset>
+                </div>
+                <div class="col-lg-6">
+                  <!-- TIPO DE PAGO -->
+                    <mat-label>Tipo de pago</mat-label>
+                    <ng-select formControlName="metodo_pago" class="inputs" style="width: 100%;" placeholder="Elige un tipo de pago*">
+                        <ng-option [value]="null" disabled>Elige un tipo de pago</ng-option>
+                        <ng-option *ngFor="let c of pagos" [value]="c">
+                            {{ c }}
+                        </ng-option>
+                    </ng-select>
+                    <mat-error *ngIf="todoForm.controls['metodo_pago'].invalid &&
+                    (!isNew || todoForm.controls['metodo_pago'].touched)">
+                        <span style="color:crimson; margin-left: 0.5em;">Selecciona un tipo de pago</span>
+                    </mat-error>
+                </div>
+              </div>
+              <!--<div *ngIf="type==3" class="row mb-3">
+                <div class="col-lg-6">
+                   INTERVALO PAGO
+                    <mat-label>Intervalo pago</mat-label>
+                    <select select2 formControlName="interval" class="select2 form-select shadow-none" style="width: 100%; height: 3vh;">
+                        <option [ngValue]="null" disabled>Elige un intervalo</option>
+                        <option *ngFor="let interval of (intervalo_tiempo | keyvalue)" [value]="interval.key">
+                            {{ interval.value }}
+                        </option>
+                    </select>
+                    <mat-error *ngIf="todoForm.controls['interval'].invalid &&
+                    (!isNew || todoForm.controls['interval'].touched)">
+                        <span style="color:crimson; margin-left: 0.5em;">Selecciona un intervalo</span>
+                    </mat-error>
+                </div>
+                <div class="col-lg-6">
+                   PRECIO PAGO
+                    <mat-label>Precio</mat-label>
+                    <div class="input-group" style="max-height: 3vh;">
+                      <input type="number" class="form-control" formControlName="price" (input)="viewChange()" style="max-height: inherit;">
+                      <div class="input-group-append" style="max-height: inherit;">
+                        <span class="input-group-text">$</span>
+                      </div>
+                    </div>
+                    <mat-error *ngIf="todoForm.controls['price'].invalid &&
+                    (!isNew || todoForm.controls['price'].touched)">
+                        <span style="color:crimson; margin-left: 0.5em;">Selecciona un tipo de pago</span>
+                    </mat-error>
+                </div>
+            </div>-->
+          </div>
+    </mat-tab>
+    <!-- HERRAMIENTAS -->
+    <mat-tab *ngIf="type==2 || type==3" [disabled]="isNew" label="Second">
+        <br>
+        <ng-template mat-tab-label>
+            <mat-icon style="margin-right: 0.5em; font-size: 22px;">build</mat-icon>
+            Herramientas
+        </ng-template>
+        <div class="movil">
+            <div style="display: flex; justify-content:center;">
+                <ng-select class="inputs capitalize" [(ngModel)]="planSelected" [ngModelOptions]="{standalone: true}"
+                placeholder="Selecciona un plan"
+                (change)="selectPlan(planSelected, 'herramientas')">
+                    <ng-option [value]="null" disabled>Selecciona un plan</ng-option>
+                    <ng-option *ngFor="let plan of plans" [value]="plan.titulo">{{plan.titulo}}</ng-option>
+                </ng-select>
+            </div>
+            <br>
+            <div style="height: 62vh; margin-bottom: 1.3vh; overflow-y: auto;" *ngIf="herramientasGET">
+                <label style="display: flex; justify-content: center; align-items: center;" *ngFor="let herramienta of herramientasGET; index as i" class="labelHerramientas" [ngClass]="{ 'toolCheck' : herramienta.check }">
+                    <mat-icon style="margin-right:2vh">{{herramienta.icono}}</mat-icon>
+                    {{herramienta.nombre}}
+                    <input #tool style="margin-left: 2vh; cursor: pointer;" #herramienta [checked]="herramienta.check" type="checkbox" class="checkboxHerramientas" [ngValue]="herramienta" (change)="onCkeckboxChangeHerramientas(herramienta, i)"/>
+                </label>
+            </div>
+        </div>
+    </mat-tab>
+    <!-- AREAS -->
+    <mat-tab *ngIf="type==2 || type==3" [disabled]="isNew" label="Third">
+        <ng-template mat-tab-label>
+            <mat-icon style="margin-right: 0.5em; font-size: 22px;">filter_hdr</mat-icon>
+            Áreas
+        </ng-template>
+        <br>
+        <div class="movil">
+            <div class="row mb-3 areaProperties">
+                <div class="col-lg-3">
+                    <p>Título</p>
+                    <input style="height: 3.8vh;" type="text" [(ngModel)]="tituloArea" [ngModelOptions]="{standalone: true}" class="inputs form-control" placeholder="Título" required (keyup)="checkFirstCharacter(tituloArea, 'area')" />
+                    <mat-hint *ngIf="checkTituloAreaValue" style="color:crimson; margin-left: 0.5em;">Título no puede empezar con un número</mat-hint>
+                </div>
+                <div class="col-lg-3">
+                    <p>Cultivo</p>
+                    <ng-select [(ngModel)]="cultivoArea" [ngModelOptions]="{standalone: true}" class="inputs capitalize"
+                        style="width: 100%;" placeholder="Selecciona una opción">
+                        <ng-option disabled [value]="null">Selecciona una opción</ng-option>
+                        <ng-option *ngFor="let cultivo of cultivos" [value]="cultivo">{{ cultivo | dictionary }}</ng-option>
+                    </ng-select>
+                </div>
+                <div class="col-lg-3">
+                    <p>Fecha fin actualización</p>
+                    <div class="d-flex align-items-center">
+                        <input class="inputs form-control" placeholder="dd/MM/yyyy" input="date" [(ngModel)]="fin_actualizacionArea" [ngModelOptions]="{standalone: true}" style="cursor: pointer;" [matDatepicker]="picker"
+                        (focus)="picker.open()"
+                        (click)="picker.open()">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <button class="btn btn-outline-dark" style="margin-top: 4vh;" (click)="crearArea()" type="submit"
+                    [disabled]="!tituloArea || !cultivoArea || !fin_actualizacionArea || loading ||
+                    checkTituloAreaValue==true || (!isNew && superuserToken === null) || loadingSuperuserToken">Crear área</button>
+                </div>
+            </div>
+
+            <div style="max-height: 63vh; overflow-y: hidden; margin-bottom: 1vh; height: 61.65vh;" *ngIf="areasGET | async as areas; else charging">
+                <h5 *ngIf="areas?.length > 0">Áreas creadas</h5>
+                <div class="card py-3">
+                  <app-table
+                    [title]="titleAreas"
+                    [buttons]="buttonsArea"
+                    [datos]="datosArea"
+                    [disabledPagination]="true"
+                    (editarDato)="editArea($event)"
+                    (terminar)="terminarArea($event)"
+                    (changeOrderedBy)="changeOrderedAreasBy($event)">
+                  </app-table>
+                </div>
+            </div>
+            <ng-template #charging>
+                <div style="display: flex; justify-content: center; align-items: center; margin-top: 3vh; margin-bottom: 3vh;">
+                    <mat-spinner></mat-spinner>
+                </div>
+            </ng-template>
+        </div>
+    </mat-tab>
+    <!-- PRODUCTOS -->
+    <mat-tab *ngIf="type==2 || type==3" [disabled]="isNew" label="Third">
+        <ng-template mat-tab-label>
+            <mat-icon style="margin-right: 0.5em; font-size: 22px;">shopping_basket</mat-icon>
+            Productos
+        </ng-template>
+        <div style="overflow-y: scroll; height: 72vh; margin-bottom: 1vh;" class="container-tab movil">
+            <br>
+            <div style="display: flex; flex-direction: row; justify-content: space-evenly;">
+                <div *ngIf="!isNew && areasGET | async as areas" style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                    <span style="margin-right: 1em;">AREA: </span>
+                    <ng-select class="inputs capitalize" [(ngModel)]="areaSelected"
+                    [ngModelOptions]="{standalone: true}" (change)="getProducts(areaSelected, areas)"
+                    placeholder="Selecciona un área">
+                        <ng-option [value]="null" disabled>Selecciona un área</ng-option>
+                        <ng-option *ngFor="let area of areas; index as i" [value]="area.id">{{ area.titulo + ' (' + area.nombre + ')' }}</ng-option>
+                    </ng-select>
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                    <span style="margin-right: 1em;">PLAN: </span>
+                    <ng-select class="inputs capitalize" style="height: 36px"
+                    [(ngModel)]="planSelected" [ngModelOptions]="{standalone: true}"
+                    placeholder="Selecciona un plan"
+                    (change)="selectPlan(planSelected, 'productos')">
+                        <ng-option [value]="null" disabled>Selecciona un plan</ng-option>
+                        <ng-option *ngFor="let plan of plans" [value]="plan.titulo" [ngStyle]="{'display': plan.titulo=='global' ? 'none' : 'auto'}">{{ plan.titulo }}</ng-option>
+                    </ng-select>
+                </div>
+            </div>
+
+            <div *ngIf="productosGET && areaSelected">
+                <div class="product-legend-container">
+                    <span style="background-color: lightcyan; margin-right: 1%;" class="product-legend">PRODUCTOS PLANET</span>
+                    <span style="background-color: #D1D1D1; margin-left: 1%;" class="product-legend">PRODUCTOS SENTINEL</span>
+                </div>
+                <div *ngFor="let letra of abc" class="container-tab">
+                    <h6>{{letra}}</h6>
+                    <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: unset; align-content: flex-start;">
+                        <div class="products-box pointer" *ngFor="let producto of productosSelected; index as i">
+                            <label *ngIf="letra==producto.agrupacion" class="product-item" [ngClass]="{ 'borde' : producto.check, 'product-item-color-planet': producto.fk_provider==1}">
+                                <input #product type="checkbox" [checked]="producto.check" (change)="onCheckboxChangeProductos(producto, i)"/>
+                                {{producto.titulo ? producto.titulo : producto.nombre}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <!-- POLIGONOS -->
+    <mat-tab *ngIf="type==2 || type==3" [disabled]="isNew" label="Third">
+        <ng-template mat-tab-label>
+            <mat-icon style="margin-right: 0.5em; font-size: 22px;">crop_square</mat-icon>
+            Polígonos
+        </ng-template>
+        <br>
+        <div class="movil" style="display: flex; justify-content: center; height: 67.2vh; margin-bottom: 1vh;">
+            <div class="leftDiv" style=" width:70%; justify-content: center;">
+                <div style="display: flex; justify-content: center;">
+                    <div *ngIf="areasGET2" style="display: flex; justify-content:center;">
+                        <ng-select (change)="restart();showArea();" class="inputs"
+                        placeholder="Selecciona un área"
+                        [ngModelOptions]="{standalone: true}" [(ngModel)]="areaZafra">
+                            <ng-option [value]="null" disabled>Selecciona un área</ng-option>
+                            <ng-option *ngFor="let area of areasGET2; index as i" [value]="area" [ngStyle]="{'display': area.titulo=='global' ? 'none' : 'auto'}">
+                              {{ area.titulo }}
+                            </ng-option>
+                        </ng-select>
+                    </div>
+                    <div style="margin-left: 2vh; align-items: center;">
+                        <p *ngIf="areaZafra && areaZafra.superficie">Superficie: {{areaZafra.superficie}} ha</p>
+                        <p *ngIf="areaZafra && !areaZafra.superficie">Superficie: 0 ha</p>
+                    </div>
+                    <div *ngIf="areaZafra && areaZafra.terminado==false" style="margin-left: 2vh;">
+                        <button (click)="terminarPoligono()" [ngClass]="{'terminarDisable':finish==false || (!isNew && superuserToken === null)}" [disabled]="(!isNew && superuserToken === null)" type="button" class="btn btn-primary btn-sm">
+                            Terminar
+                        </button>
+                    </div>
+                </div>
+
+                <div *ngIf="areaZafra && areaZafra.terminado==true" style="margin-top: 1vh;">
+                    <div style="display: flex; justify-content: center;" >
+                        <mat-icon style="color: darkgoldenrod;">warning</mat-icon>
+                        <p style="margin-left: 2vh; color: darkgoldenrod;">No es posible añadir polígonos hasta que el área esté procesada por completo en el servidor.</p>
+                    </div>
+                    <div style="display: flex; justify-content: center;" >
+                        <p style="margin-left: 2vh; color: darkgoldenrod;">ATENCIÓN: Puedes añadir zafras históricas con el botón "+". </p>
+                    </div>
+                </div>
+
+                <div *ngIf="finish==true && areaZafra && areaZafra.terminado==false" style="display: flex; justify-content: center; margin-top: 1vh;" >
+                    <mat-icon style="color: rgb(0, 94, 195);;">done_outline</mat-icon>
+                    <p style="margin-left: 2vh; color: rgb(0, 94, 195);">Ya puedes darle al botón "Terminar" para que el área comience a procesarse en el servidor.</p>
+                </div>
+
+                <div *ngIf="areaZafra && areaZafra.terminado==null" style="display: flex; justify-content: center; margin-top: 1vh;" >
+                    <mat-icon style="color: black;">info</mat-icon>
+                    <p style="margin-left: 2vh; color: black;">ÁREA PROCESADA: si subes un shape como "Zafra Actual" se comparará con los polígonos ya existentes.</p>
+                </div>
+
+                <div>
+                    <label style="margin: 0.1vh; margin-left: 1vh;" for="">  Zafra Actual</label>
+                </div>
+
+                <div *ngIf="areasGET | async as areas">
+
+                    <!-- ZAFRA ACTUAL -->
+                    <div id="actual" class="flex-container" style="border-width: 1vh; border-color: black;border: solid; margin-top: 1vh;">
+                        <div class="flex-container" style="display: flex; justify-content: space-around;">
+                            <div style="width: 15vh;">
+                                <p style="margin: 2vh; width: auto; overflow:hidden; white-space:nowrap; text-overflow: ellipsis;">{{actual.apodo}}</p>
+                            </div>
+                            <div *ngIf="areaZafra && areaZafra.terminado==null" style="display: flex; align-items: center; width: 20vh; margin-right: 2.5vh;">
+                                <ng-select id="actual" (change)="restartVariables(3,actual)"
+                                [disabled]="!areaZafra || areaZafra.terminado==true || enviar==true" style="width: 100%;" class="inputs capitalize selectorAtributo"
+                                [ngModelOptions]="{standalone: true}" [(ngModel)]="actual.addCompare" placeholder="Selecciona un tipo">
+                                    <ng-option [value]="null" disabled>Selecciona un tipo</ng-option>
+                                    <ng-option *ngFor="let c of addCompare; index as i" [value]="c">{{ c }}</ng-option>
+                                </ng-select>
+                            </div>
+                            <div style="display: flex; align-items: center; width: 20vh; margin-right: 2.5vh;">
+                                <ng-select id="actual" (change)="restartVariables(3,actual)"
+                                [disabled]="!areaZafra || areaZafra.terminado==true || enviar==true" style="width: 100%;" class="inputs capitalize selectorAtributo"
+                                [ngModelOptions]="{standalone: true}" [(ngModel)]="actual.tipo" placeholder="Selecciona un tipo">
+                                    <ng-option [value]="null" disabled>Selecciona un tipo</ng-option>
+                                    <ng-option *ngFor="let c of optZafra; index as i" [value]="c">{{ c }}</ng-option>
+                                </ng-select>
+                            </div>
+                            <div style="direction: rtl; display: flex; justify-content: space-evenly; align-items: center;">
+
+                                <div style="display: flex; align-items: center; padding-left: 5vh;">
+                                    <button id="enviarActual" *ngIf="actual['errores']==false && enviar==true" class="btn btn-success btn-sm text-white" [disabled]="(!isNew && superuserToken === null) || loadingSuperuserToken" (click)="enviarPoligono(actual,1);restartVariables(1,actual);">ENVIAR</button>
+
+                                    <button id="erroresActual" *ngIf="actual['errores']==true" class="btn btn-danger btn-sm text-white" (click)="downloadErrors(actual)">ERRORES</button>
+
+                                    <button id="procesarActual" *ngIf="actual['errores']==false && actual.tipo==='shapefile' && enviar==false" [disabled]="(!isNew && superuserToken === null) || loadingSuperuserToken" [ngClass]="{'terminarDisable':actual.zip==false || areaZafra.terminado==true || (!isNew && superuserToken === null) || loadingSuperuserToken}" class="btn btn-warning btn-sm text-white" (click)="sendPoligonos(actual,1);restartVariables(4,actual);">PROCESAR</button>
+
+                                    <button id="procesarActual" *ngIf="actual['errores']==false && actual.tipo==='kml' && enviar==false" [disabled]="(!isNew && superuserToken === null) || loadingSuperuserToken" [ngClass]="{'terminarDisable':actual.zip==false || actual.csv==false || areaZafra.terminado==true || (!isNew && superuserToken === null) || loadingSuperuserToken}" class="btn btn-warning btn-sm text-white" (click)="sendPoligonos(actual,1);restartVariables(4,actual);">PROCESAR</button>
+                                </div>
+
+                                <div style="display: flex; align-items: center;">
+                                    <label style="margin: 0;" [ngClass]="{'terminarDisable':!areaZafra || enviar==true || areaZafra.terminado==true,'pointer':areaZafra, 'archivos':actual.csv==true && enviar==false}" type="button" for="file-upload2" class="btn btn-secondary btn-sm">
+                                        CSV
+                                    </label>
+                                    <input  style="display: none;" id="file-upload2" type="file" (click)="$event.target.value=null" (change)="onFileInput($event,'csv',actual);" accept="text/csv"/>
+                                </div>
+
+                                <div style="display: flex; align-items: center; padding-right: 5vh;">
+                                    <label style="margin: 0;" [ngClass]="{'terminarDisable':!areaZafra || enviar==true || areaZafra.terminado==true,'pointer':areaZafra, 'archivos':actual.zip==true && enviar==false}" type="button" for="file-upload" class="btn btn-secondary btn-sm">
+                                        ZIP
+                                    </label>
+                                    <input style="display: none;" id="file-upload" type="file" (click)="$event.target.value=null" (change)="onFileInput($event,'zip',actual);" accept="application/zip"/>
+                                </div>
+
+                            </div>
+
+                            <div *ngIf="actual['errores']==false && enviar==true && areaZafra.terminado != null" style="display: flex; justify-content: center;" >
+                                <p style="margin: 2vh; width: auto;">Polígonos: {{actual.response | compareShape: null}}</p>
+                            </div>
+
+                            <div style="display: flex; align-items: center; padding-right: 2vh;">
+                                <mat-icon [ngClass]="{'disable':!areaZafra || areaZafra.terminado==true,'pointer':areaZafra}" style="font-size: 3vh;" (click)="restartVariables(0,actual)">rotate_left</mat-icon>
+                            </div>
+                        </div>
+
+                        <div *ngIf="actual['errores']==false && enviar==true && areaZafra.terminado == null" style="display: flex; justify-content: center;" >
+                            <p style="margin: 2vh; width: auto;">Añadir: {{actual.response | compareShape: 2}}</p>
+                            <p style="margin: 2vh; width: auto;">Editar: {{actual.response | compareShape: 1}}</p>
+                            <p *ngIf="actual['addCompare'].includes('sustituir')" style="margin: 2vh; width: auto;">Desactivar por superposición: {{actual.response | compareShape: 0}}</p>
+                            <p *ngIf="actual['addCompare']=='sustituir area completa'" style="margin: 2vh; width: auto;">Desactivar: {{actual.response | compareShape: 3}}</p>
+                        </div>
+
+                    </div>
+
+                    <div>
+                        <label style="margin: 1vh;" for="">En caso de querer añadir una nueva Zafra, pulse el botón "+" :</label>
+                    </div>
+
+                    <!-- ZAFRAS DINAMICAS -->
+                    <div id="dinamicas" *ngIf="zafras.length>0" [ngClass]="{'divDinamicas2':areaZafra.terminado==true,'divDinamicas1':areaZafra.terminado!=true}">
+                        <div class="flex-container" style="display: flex; border-width: 1vh; border-color: black;border: solid; margin-top: 1vh; justify-content: space-around;"
+                        *ngFor="let zafra of zafras; index as i">
+
+                            <div style="width: 25vh;">
+                                <p style="margin: 2vh; width: auto; overflow:hidden; white-space:nowrap; text-overflow: ellipsis;">{{zafras[i]['apodo']}}</p>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <ng-select [disabled]="zafras[i].historico==true" [id]="zafras[i]['nombre']" (change)="restartVariables(3,zafras[i])"
+                                class="inputs capitalize"
+                                placeholder="Selecciona un tipo"
+                                [(ngModel)]="zafras[i]['tipo']" [ngModelOptions]="{standalone: true}">
+                                    <ng-option [value]="null" disabled>Selecciona un tipo</ng-option>
+                                    <ng-option *ngFor="let c of optZafra; index as j" [value]="c">{{ c }}</ng-option>
+                                </ng-select>
+                            </div>
+
+                            <div style="direction: rtl; display: flex; justify-content: space-evenly; align-items: center;">
+
+                                <div style="display: flex; align-items: center; padding-left: 5vh;">
+                                    <button *ngIf="zafras[i]['errores']==true" class="btn btn-danger btn-sm text-white" (click)="downloadErrors(zafras[i])">ERRORES</button>
+
+                                    <p style="margin:0" *ngIf="zafras[i].historico==true">PROCESADO</p>
+
+                                    <button *ngIf="zafras[i]['errores']==false && zafras[i]['tipo']==='shapefile' && zafras[i].historico==false" [disabled]="(!isNew && superuserToken === null) || loadingSuperuserToken" [ngClass]="{'terminarDisable':zafras[i]['zip']==false || zafras[i]['nombre'].length==0}" class="btn btn-success btn-sm text-white" (click)="sendPoligonos(zafras[i],2,i); restartVariables(1,zafras[i]);">PROCESAR</button>
+
+                                    <button *ngIf="zafras[i]['errores']==false && zafras[i]['tipo']==='kml' && zafras[i].historico==false" [disabled]="(!isNew && superuserToken === null) || loadingSuperuserToken" [ngClass]="{'terminarDisable':zafras[i]['zip']==false || zafras[i]['csv']==false || zafras[i]['nombre'].length==0}" class="btn btn-success btn-sm text-white" (click)="sendPoligonos(zafras[i],2,i); restartVariables(1,zafras[i]);">PROCESAR</button>
+                                </div>
+
+                                <div style="display: flex; align-items: center;">
+                                    <label type="button" [ngClass]="{'terminarDisable':zafras[i].historico==true,'archivos':zafras[i].csv==true}" [(for)]="zafras[i]['idcsv']" class="btn btn-secondary btn-sm" style="margin: 0;">
+                                        CSV
+                                    </label>
+                                    <input style="display: none;" [(id)]="zafras[i]['idcsv']" type="file" (click)="$event.target.value=null" (change)="onFileInput($event,'csv',zafras[i]);" accept="text/csv"/>
+                                </div>
+
+                                <div style="display: flex; align-items: center; padding-right: 5vh;">
+                                    <label type="button" [ngClass]="{'terminarDisable':zafras[i].historico==true,'archivos':zafras[i].zip==true}" [(for)]="zafras[i]['idzip']" class="btn btn-secondary btn-sm" style="margin: 0;">
+                                        ZIP
+                                    </label>
+                                    <input style="display: none;" [id]="zafras[i]['idzip']" type="file" (click)="$event.target.value=null" (change)="onFileInput($event,'zip',zafras[i]);" accept="application/zip"/>
+                                </div>
+
+                            </div>
+
+                            <div style="display: flex; align-items: center; padding-right: 2vh;">
+                                <mat-icon [ngClass]="{'disable':zafras[i].historico==true}" style="font-size: 3vh;" (click)="restartVariables(0,zafras[i])">rotate_left</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTON SUMAR ZAFRAS -->
+                    <div style="display: flex; justify-content:center; position: sticky; bottom: 0; background-color: #eeeeee; width: 100%;">
+                        <mat-icon style="font-size: 5vh; margin-top: 0.7vh;" [ngClass]="{'disable':!areaZafra || areaZafra.terminado==false,'pointer':areaZafra}" (click)="addZafra()">add_circle</mat-icon>
+                    </div>
+
+                </div>
+                <div style="display: flex; justify-content:center; margin-top: 3em;" *ngIf="areas?.length == 0">
+                    <p style="font-size: 3vh;">No tienes ningún área</p>
+                </div>
+            </div>
+            <div style="display: flex; width:30%; flex-direction: column; margin-left: 2vh; border-width: 1vh; border-color: black;border: solid;">
+                <h5 style="margin: 1vh;">Instrucciones</h5>
+                <div style="margin: 1vh; overflow-y: auto; padding: 0.5em;">
+                    <h6>Zafra Actual (nueva área)</h6>
+                    <p>1º : Selecciona el tipo de comparación: añadir (solo añade y edita polígonos) o sustituir (añadir, editar y desactivar polígonos).</p>
+                    <p>2º : Selecciona el tipo de subida (shapefile o kml).</p>
+                    <p>3º : Selecciona tu zip (obligatorio) que debe contener el archivo .kml o los archivos shape y tu csv (obligatorio para kml).</p>
+                    <p>4º : Pulsa el botón "PROCESAR" para mandar y procesar tus archivos.</p>
+                    <p>5º : Pulsa el botón "ENVIAR" para finalizar la subida de polígonos de la zafra.</p>
+                    <p>6º : Pulsa el botón "TERMINAR". Si todo ha ido bien, el área quedará a la espera de ser procesada. No podrás subir otra Zafra Actual para comparar con la anterior hasta que el área esté procesada, pero si añadir Históricos.</p>
+                    <br>
+                    <h6>Zafra Actual (comparar con la subida anteriormente)</h6>
+                    <p>1º : Selecciona el tipo de subida. Añadir o sustituir las parcelas, según se quiera borrar las parcelas que ya no se encuentran en el shapefile/kml o no, y Shapefile o Kml para elegir el tipo de archivo que se va a subir.</p>
+                    <p>2º : Selecciona tu zip (obligatorio) que debe contener el archivo .kml o los archivos shape y tu csv (obligatorio para kml).</p>
+                    <p>3º : Pulsa el botón "PROCESAR" para mandar tus archivos.</p>
+                    <p>4º : Pulsa el botón "ENVIAR" para finalizar la subida de la zafra a comparar.</p>
+                    <br>
+                    <h6>Históricos</h6>
+                    <p>1º : Pulsa el botón "+" para añadir un panel de zafra.</p>
+                    <p>2º : Selecciona el tipo de subida (shapefile o kml).</p>
+                    <p>3º : Selecciona tu zip (obligatorio) que debe contener el archivo .kml o los archivos shape y tu csv (obligatorio para kml).</p>
+                    <p>4º : Pulsa el botón "ENVIAR" para finalizar la subida del histórico.</p>
+                    <br>
+                    <h6>Errores</h6>
+                    <p>Si es un error de archivos tendrá disponible un csv para descargar desde el botón "ERRORES" con más información sobre estos. En caso contrario, el mensaje por pantalla le informará del error en cuestión.</p>
+                    <p>NOTA: Cuando abras un archivo ".csv" generado por posibles errores en la subida de archivos, NO utilices como delimitadores las comas "," o los espacios en blanco " ".</p>
+                </div>
+            </div>
+        </div>
+        <br>
+    </mat-tab>
+    <!-- CONVERSION -->
+    <mat-tab style="display: flex; flex-direction: column" *ngIf="(type==2 || type==3) && !isNew" label="Third">
+        <ng-template mat-tab-label>
+            <mat-icon style="margin-right: 0.5em; font-size: 22px;">exit_to_app</mat-icon>
+            Conversión
+        </ng-template>
+        <div class="movil" style="height: 72vh; margin-bottom: 1vh;" >
+            <div *ngIf="type==2">
+                <div *ngIf="type==2" style="display: flex; justify-content:center">
+                    <button  (click)="convertir(1)" [disabled]="(!this.isNew && this.superuserToken === null) || this.loadingSuperuserToken" class="boton_1">Convertir a cliente</button>
+                </div>
+                <div *ngIf="type==2" class="linea"></div>
+                <div style="display: flex; justify-content:center">
+                    <button (click)="convertir(2)" [disabled]="(!this.isNew && this.superuserToken === null) || this.loadingSuperuserToken" class="boton_2">Dar de baja</button>
+                </div>
+            </div>
+            <div *ngIf="type==3">
+                <div style="display: flex; justify-content:center">
+                    <button (click)="convertir(2)" [disabled]="(!this.isNew && this.superuserToken === null) || this.loadingSuperuserToken" class="boton_2">Dar de baja</button>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+</mat-tab-group>
+<!-- BOTONES -->
+<div mat-dialog-actions *ngIf="clienteInfo || isNew">
+  <button type="button" (click)="goBack()" mat-raised-button cdkFocusInitial class="btn btn-secondary btn-lg">Atrás</button>
+  <button *ngIf="[0, 1, 3].includes(tabSelected)" (click)="saveUser()" style="margin-left: 2vh;" type="submit" [disabled]="loading || tabSelected === 0 && ((todoForm.invalid || checkEmailValue || checkUserValue) && (!isNew || clickButton)) || (!isNew && superuserToken === null)"
+  mat-raised-button cdkFocusInitial class="btn btn-success btn-lg text-white"><i class="fas fa-spinner fa-spin m-r-10" *ngIf="loading"></i>{{ (isNew) ? 'Crear' : 'Guardar' }}</button>
+  <ng-container *ngIf="messageSuper | async as messageSuperUser">
+    <div class="alert alert-danger ml-2 d-inline h-100" *ngIf="!isNew && !loadingSuperuserToken">
+      {{ messageSuperUser }}
+    </div>
+  </ng-container>
+</div>
+</form>
+  <ng-container *ngIf="!isNew">
+    <div class="alert alert-danger info-superusers" id="buttonDanger" *ngIf="!loadingSuperuserToken && superuserToken === null; else correctSuperusers" disappear>
+      <i class="fas fa-times" style="color: red;"></i><span>Superuser no cargado</span>
+    </div>
+    <ng-template #correctSuperusers>
+      <div class="alert alert-success info-superusers" id="buttonSuccess" *ngIf="!loadingSuperuserToken && superuserToken !== null; else loadingSuperuser" disappear>
+        <i class="fas fa-check" style="color: green;"></i><span>Superuser cargado</span>
+      </div>
+    </ng-template>
+    <ng-template #loadingSuperuser>
+      <div class="alert alert-warning info-superusers" *ngIf="loadingSuperuserToken">
+        <i class="fas fa-spinner fa-spin"></i><span>Cargando superuser...</span>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>
+

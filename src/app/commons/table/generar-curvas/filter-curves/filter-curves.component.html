@@ -1,0 +1,69 @@
+<div *ngIf="columns?.length; else errorFilter" id="container-filter-curves">
+  <ng-select [(ngModel)]="selectedColumn" [searchable]="false" [loading]="loadingData" [disabled]="loadingData || disabled" [ngClass]="{'disabledSelect': disabled==true}">
+    <ng-container *ngFor="let column of columns">
+      <ng-option *ngIf="column.value === null || (column.value.length && column.value.length>1)"  [value]="column">
+        {{ (column.value | columnFiltersCurve:column.key:true) + '' | titlecase }}
+      </ng-option>
+    </ng-container>
+  </ng-select>
+  <ng-container *ngIf="selectedColumn; else disableInput">
+    <ng-select *ngIf="selectedColumn.value !== null; else inputValue" [(ngModel)]="auxFilter[selectedColumn.key]" [multiple]="true" [clearable]="false" [placeholder]="(!loadingData) ? 'Elige una opción' : 'Elige u...'" [searchable]="false" [loading]="loadingData" [disabled]="loadingData || disabled" (ngModelChange)="changeSelectFilter()" [items]="selectedColumn.value" [selectableGroupAsModel]="false" [groupValue]="getGroupValue" [groupBy]="groupByAll" [closeOnSelect]="false" [selectableGroup]="true" [ngClass]="{'disabledSelect': disabled==true}">
+      <ng-template ng-multi-label-tmp let-item="item">
+        <div style="display: flex; align-items: center;">
+          <span>{{ selectedColumn.key | titlecase }}: {{auxFilter[selectedColumn.key]?.length}}</span>
+        </div>
+      </ng-template>
+      <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+        <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{ (item | columnFiltersCurve:selectedColumn.key:false) + '' | titlecase }}
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+        <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{ (item | columnFiltersCurve:selectedColumn.key:false) + '' | titlecase }}
+      </ng-template>
+    </ng-select>
+    <ng-template #disableInput>
+      <input type="text" onfocus="this.value = ''">
+    </ng-template>
+  </ng-container>
+  <ng-template #disableInput>
+    <input type="text" onfocus="this.value = ''" disabled="true">
+  </ng-template>
+  <button [disabled]="auxFilter | isSameFilter:actualFilter || disabled" (click)="changeFilter()">Filtrar</button>
+  <ng-container *ngIf="(actualFilter | objectNoNullValues) as filterArray">
+    <div *ngIf="filterArray?.length" title="Filtros activos" [popover]="filterArray?.length ? myPopover : null" [popoverOnHover]="false" popoverPlacement="left" style="display: flex;">
+      <mat-icon class="icon-filter">filter_alt</mat-icon>
+      <span style="margin: 0; cursor: pointer;">{{filterArray.length}}</span>
+    </div>
+  </ng-container>
+</div>
+<ng-template #errorFilter>
+  <div>No hay filtros por aplicar</div>
+</ng-template>
+
+<popover-content #myPopover
+    [closeOnClickOutside]="true">
+    <ng-container *ngIf="(actualFilter | objectNoNullValues).length; else noFiltersFound">
+          <div class="filter-active title-popup">
+            <span>Filtros activos</span>
+            <span title="Borrar todos" (click)="removeFilter();" class="clear-all-filter">Borrar todos</span>
+          </div>
+          <mat-divider></mat-divider>
+      <ng-container *ngFor="let filter of (actualFilter | objectNoNullValues); last as isLast">
+        <div class="filter-active">
+          {{ filter.key | titlecase }}:
+          <ng-container *ngIf="filter?.value?.length; else normalValue">
+            <span class="ellipsis-value">
+              <ng-container *ngFor="let value of filter.value; last as isLastValue">
+                {{ (value | columnFiltersCurve:filter.key) + '' | titlecase }}{{ (!isLastValue) ? ', ' : '' }}
+              </ng-container>
+            </span>
+          </ng-container>
+          <ng-template #normalValue><span class="ellipsis-value">{{ filter.value }}</span></ng-template>
+          <i title="Borrar filtro" class="fas fa-times" style="color: red; cursor: pointer;" (click)="removeFilter(filter.key);"></i>
+        </div>
+        <mat-divider *ngIf="!isLast"></mat-divider>
+      </ng-container>
+    </ng-container>
+    <ng-template #noFiltersFound>
+      No existen filtros activos
+    </ng-template>
+</popover-content>

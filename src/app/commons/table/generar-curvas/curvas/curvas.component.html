@@ -1,0 +1,29 @@
+<div class="curve-container">
+    <section class="curve-graph">
+        <div *ngIf="curveType === 'BBDD' || (curveType === 'Temporales' && compareState==false)"
+        [ngClass]="{'square_selected': checked && !curva.compare, 'square_not_selected': !checked && !curva.compare,  'square_disabled': curveType === 'Temporales' && curva.compare}"
+        (click)="checkCurve()">
+            <mat-icon>check</mat-icon>
+        </div>
+        <canvas baseChart [data]="chart" [type]="'line'" [options]="options"></canvas>
+    </section>
+    <section class="curve-info">
+        <div *ngFor="let keys of curveAttributesKeys; index as i;">
+            <span *ngIf="!hideCurveInfo.includes(keys)">
+                <strong>{{(curveAttributesValues[i] | columnFiltersCurve:keys:true) + '' | titlecase}}: </strong>
+            </span>
+            <span [title]="(curveAttributesValues[i] | columnFiltersCurve:keys:false) + '' | titlecase" id="curve-info-atributo" *ngIf="!hideCurveInfo.includes(keys)">
+                {{(curveAttributesValues[i] | columnFiltersCurve:keys:false) + '' | titlecase}}
+            </span>
+        </div>
+    </section>
+</div>
+<div *ngIf="!compareState" class="curve-footer">
+    <button id="comparar" class="btn btn-primary"
+        *ngIf="curveType === 'Temporales' && curva.compare && compareState==false"
+        (click)="comparar()">Comparar
+    </button>
+    <button class="btn btn-danger" (click)="deleteCurvaBBDD(curva.id)" *ngIf="curveType === 'BBDD' || compareState==true">Eliminar</button>
+    <button [disabled]="curvesChecked?.length" class="btn btn-dark" (click)="reprocesar()">Reprocesar</button>
+    <button disabled class="btn btn-dark">Detalles</button>
+</div>

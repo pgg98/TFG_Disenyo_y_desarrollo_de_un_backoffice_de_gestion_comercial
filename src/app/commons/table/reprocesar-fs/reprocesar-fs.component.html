@@ -1,0 +1,30 @@
+
+<div class="contenedor">
+    <div class="contenedor-titulo">
+        <h2>REPROCESAR PRODUCTOS</h2>
+    </div>
+    <div class="contenedor-estructura">
+        <section class="contenedor-estructura-productos">
+            <label>Seleccione los productos a reprocesar</label>
+            <div>
+                <mat-checkbox (change)="allChecked = !allChecked">Seleccionar todos</mat-checkbox>
+                <mat-checkbox [checked]="allChecked" *ngFor="let producto of productos">
+                    {{producto.nombre}}
+                </mat-checkbox>
+            </div>
+        </section>
+        <section class="contenedor-estructura-fechas">
+            <label>Seleccione las fechas a reprocesar</label>
+            <div>
+                <span>Desde</span>
+                <input type="date">
+                <span>Hasta</span>
+                <input type="date">
+            </div>
+        </section>
+    </div>
+    <div class="contenedor-reprocesar">
+        <button>Reprocesar</button>
+    </div>
+
+</div>

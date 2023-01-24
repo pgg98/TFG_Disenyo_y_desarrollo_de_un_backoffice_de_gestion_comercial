@@ -1,0 +1,23 @@
+#loginform {
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 4em;
+
+  box-shadow: 0 0 15px rgb(235, 235, 235);
+  border-radius: 10px;
+}
+
+.row.pa-2 {
+  padding: 1em 1.5em;
+}
+
+.col-12.pa-2 {
+  padding: 0 1.5em;
+  margin-bottom: 1em;
+}
+
+#title {
+  display: flex;
+  justify-content: center;
+}
