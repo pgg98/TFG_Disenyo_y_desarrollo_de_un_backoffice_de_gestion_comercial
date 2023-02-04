@@ -1,7 +1,6 @@
 import { AfterViewChecked, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Producto } from 'src/app/interfaces/producto';
-import { HttpClient } from '@angular/common/http';
 import { Area } from 'src/app/interfaces/area';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -37,8 +36,6 @@ import { buttonsEachTabla, columnsTable } from '../constants/columnsTable';
 import { Actions, ofType } from '@ngrx/effects';
 import { changesColumns } from '../constants/columnsTable';
 import { PlanService } from 'src/app/services/configuration/plan.service';
-
-import { formatDate } from '@angular/common';
 import { getPlans, getProductsAll } from 'src/app/pages/admin/products_configuration/state/productsConfiguration.selector';
 import { Plan } from 'src/app/interfaces/plan';
 import { Token } from 'src/app/models/auth/token.model';
