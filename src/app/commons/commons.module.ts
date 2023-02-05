@@ -26,24 +26,13 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CommonService } from '../services/Common.service';
 import { PopoverModule } from 'ngx-smart-popover'
-
-import {MatMenuModule} from '@angular/material/menu';
-import {MatGridListModule} from '@angular/material/grid-list';
-import { AsignarCurvasComponent } from './table/asignar-curvas/asignar-curvas.component';
-import { ReprocesarFsComponent } from './table/reprocesar-fs/reprocesar-fs.component';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { GenerarCurvasComponent } from './table/generar-curvas/generar-curvas.component';
-import { CurvasComponent } from './table/generar-curvas/curvas/curvas.component';
-import { EffectsModule } from '@ngrx/effects';
-import { GenerarCurvasEffects } from './table/generar-curvas/state/generar-curvas.effects';
-import { StoreModule } from '@ngrx/store';
-import { GENERARCURVAS_STATE_NAME } from './table/generar-curvas/state/generar-curvas.selector';
-import { FilterCurvesComponent } from './table/generar-curvas/filter-curves/filter-curves.component';
-import { GenerarCurvasReducer } from './table/generar-curvas/state/generar-curvas.reducer';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslocoModule } from '@ngneat/transloco';
-import {MatBadgeModule} from '@angular/material/badge';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -58,12 +47,7 @@ import {MatBadgeModule} from '@angular/material/badge';
     EditorComponent,
     TableComponent,
     IndeterminateProgressBarComponent,
-    FilterTableComponent,
-    AsignarCurvasComponent,
-    ReprocesarFsComponent,
-    GenerarCurvasComponent,
-    CurvasComponent,
-    FilterCurvesComponent
+    FilterTableComponent
   ],
   exports: [
     BreadcrumbComponent,
@@ -77,8 +61,7 @@ import {MatBadgeModule} from '@angular/material/badge';
     EditorComponent,
     TableComponent,
     IndeterminateProgressBarComponent,
-    FilterTableComponent,
-    FilterCurvesComponent
+    FilterTableComponent
   ],
   imports: [
     CommonModule,
@@ -101,9 +84,7 @@ import {MatBadgeModule} from '@angular/material/badge';
     MatGridListModule,
     MatProgressSpinnerModule,
     TranslocoModule,
-    MatBadgeModule,
-    EffectsModule.forFeature([GenerarCurvasEffects]),
-    StoreModule.forFeature(GENERARCURVAS_STATE_NAME, GenerarCurvasReducer),
+    MatBadgeModule
   ],
   providers: [
     CommonService

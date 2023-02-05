@@ -16,13 +16,6 @@ import { CommonService } from 'src/app/services/Common.service';
 import { IsButtonTable } from 'src/app/pipes/isButtonTable.pipe';
 import { IsStatusColumnTable } from 'src/app/pipes/isStatusColumnTable.pipe';
 import { MatDialog } from "@angular/material/dialog";
-import { AsignarCurvasComponent } from "./asignar-curvas/asignar-curvas.component";
-import { addBorrarCurvas, curvasOptimasSuccess } from '../editor/state/editor.actions';
-import { ReprocesarFsComponent } from './reprocesar-fs/reprocesar-fs.component';
-import { Area } from 'src/app/interfaces/area';
-import { getCurvas, getCurvasBorrar, getLoadingCurvas } from '../editor/state/editor.selector';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
-import { GenerarCurvasComponent } from './generar-curvas/generar-curvas.component';
 
 @Component({
   selector: 'app-table',
@@ -103,56 +96,6 @@ export class TableComponent implements OnInit, OnChanges {
     if(this.categoryTitle && this.categoryTitle !== -1) {
       let titles = Object.entries(categories).filter(([key, value]) => typeof value === 'number' && value === this.categoryTitle + 1);
       this.nextTitle = ((titles && titles.length > 0) ? titles[0][0].toLocaleLowerCase() : -1)
-    }
-
-    if(this.title=='curvas'){
-      this.store.select(getCurvasBorrar).pipe(takeUntil(this.ngUnsubscribe)).subscribe(curvasBorrar=>{
-        this.rowsSelected=curvasBorrar;
-        this.datos.map(value=>{
-          const checkbox = document.getElementById(
-            `checkbox-${value['id']}`,
-          ) as HTMLInputElement | null;
-          if(checkbox){checkbox.checked = false;}
-        });
-        for (let i = 0; i < this.rowsSelected.length; i++) {
-          for (let j = 0; j < this.datos.length; j++) {
-            if(this.rowsSelected[i]['id']==this.datos[j]['id']){
-              const checkbox = document.getElementById(
-                `checkbox-${this.rowsSelected[i]['id']}`,
-              ) as HTMLInputElement | null;
-              if(checkbox){checkbox.checked = true;}
-            }
-          }
-        }
-        let encontrado = 0;
-        this.rowsSelected.map(row=>{
-          this.datos.map(dato=>{
-            if(row['id']==dato['id']) encontrado++;
-          });
-        });
-        const checkbox2 = document.getElementById(
-          `borraTodo`,
-        ) as HTMLInputElement | null;
-        if(checkbox2 && encontrado==this.datos.length){checkbox2.checked = true;}
-        else if(checkbox2 && encontrado!=this.datos.length){checkbox2.checked = false;}
-      });
-
-      this.store.select(getCurvas).pipe(takeUntil(this.ngUnsubscribe)).subscribe(curvas=>{
-        if(curvas){
-          const checkbox = document.getElementById(
-            `borraTodo`,
-          ) as HTMLInputElement | null;
-          if(checkbox){checkbox.checked = this.allChecked;};
-        }
-      });
-
-      this.store.select(getLoadingCurvas)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(
-        value => {
-          this.loadingCurvas = value;
-        }
-      );
     }
   }
 
@@ -464,51 +407,6 @@ export class TableComponent implements OnInit, OnChanges {
 
   trackById(index: number, item: any) {
     return item.id;
-  }
-
-  asignarCurvas(element){
-    const dialogRef = this.dialog.open(AsignarCurvasComponent, {
-      width: '150vh',
-      height: '90vh',
-      data: {
-        element:element
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-    });
-  }
-
-  generarCurvas(area:Area){
-    const dialogRef = this.dialog.open(GenerarCurvasComponent, {
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      height: '92.5%',
-      width: '90%',
-      panelClass: 'dialog-generate-curves',
-      data: {
-        areaSelected: area,
-        areas: this.datos
-      }
-    })
-
-    dialogRef.afterClosed().subscribe(result => {
-
-    });
-  }
-
-
-  reprocesarFs(area_selected:Area){
-    const dialogRef = this.dialog.open(ReprocesarFsComponent, {
-      data: { area: area_selected }
-    })
-
-    dialogRef.afterClosed().subscribe(result => {
-    });
-  }
-
-  getMongoArea(element: any){
-    //this.store.dispatch(getMongoArea({area: element}))
   }
 
   /** DESTROY */

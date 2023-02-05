@@ -1,7 +1,6 @@
 import { ActionReducer, createReducer, on } from "@ngrx/store"
 import { initialStateAuth } from "src/app/auth/state/auth.state";
 import { initialStateEditor } from "src/app/commons/editor/state/editor.state";
-import { initialGenerarCurvasState } from "src/app/commons/table/generar-curvas/state/generar-curvas.state";
 import { initialProductsConfigurationState } from "src/app/pages/admin/products_configuration/state/productsConfiguration.state";
 import { initialAdminState } from "src/app/pages/admin/state/admin.state";
 import { setTitle, setBreadcrums } from "./share.actions";
@@ -49,7 +48,6 @@ export function clearState(reducer: ActionReducer<any>): ActionReducer<any> {
                 admin: initialAdminState,
                 auth: initialStateAuth,
                 editor: initialStateEditor,
-                generarCurvas: initialGenerarCurvasState,
                 productsConfiguration: initialProductsConfigurationState
             }
 

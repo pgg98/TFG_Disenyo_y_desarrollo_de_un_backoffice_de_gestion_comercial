@@ -2,19 +2,18 @@ import { Injectable } from "@angular/core"
 import { Actions, createEffect, ofType } from "@ngrx/effects"
 import { Store } from "@ngrx/store"
 import { forkJoin, of } from "rxjs";
-import { catchError, exhaustMap, map, switchMap, withLatestFrom } from "rxjs/operators";
+import { catchError, exhaustMap, map, withLatestFrom } from "rxjs/operators";
 import { changeLoginWaiting, loadSuperusers, loadSuperuserTokenSuccess, loginStart, noData } from "src/app/auth/state/auth.actions";
 import { Area } from "src/app/interfaces/area";
-import { Pagination } from "src/app/interfaces/Pagination.interface";
 import { saveClientData } from "src/app/pages/admin/state/admin.actions";
 import { AdminService } from "src/app/services/admin.service";
 import { EditorService } from "src/app/services/editor.service";
 import { AppState } from "src/app/store/app.state";
 import Swal from "sweetalert2";
 import { columnsTable } from "../../constants/columnsTable";
-import { createAreaProducts, createArea, loadClientAreasSucces, loadDataSpecificClient, loadClientAreas, loadEditorProductos, loadEditorProductosSucces, loadEditorHerramientas, loadEditorHerramientasSucces, editUser, editUserSuccess, editClient, editClientSuccess, createAreaSuccess, loadAreaProducts, createAreaProductsSuccess, saveNewUser, registerClientToStripe, saveAreaProducts, uniquesSuccess, uniques, areasAll, areasAllSuccess, curvasOptimas, curvasOptimasSuccess, asignarCurvasSuccess, borrarCurvas, borrarCurvasSuccess, addBorrarCurvas, setCurveFilter, expireClient, loadingCurves, EDIT_CLIENT_SUCCESS } from "./editor.actions";
-import { getEditorHerramientas, getEditorProductos, getCurvasFilter, getCurvasBorrar } from "./editor.selector"
-import { addPoligono, addPoligonoSuccess, sendPoligono, sendPoligonoSuccess, uniquesLimited, uniquesLimitedSuccess, finishAreaSuccess, finishArea, editArea, editAreaSuccess, asignarCurvas } from "./editor.actions";
+import { createAreaProducts, createArea, loadClientAreasSucces, loadDataSpecificClient, loadClientAreas, loadEditorProductos, loadEditorProductosSucces, loadEditorHerramientas, loadEditorHerramientasSucces, editUser, editUserSuccess, editClient, editClientSuccess, createAreaSuccess, loadAreaProducts, createAreaProductsSuccess, saveNewUser, registerClientToStripe, saveAreaProducts, uniquesSuccess, uniques, areasAll, areasAllSuccess, expireClient, EDIT_CLIENT_SUCCESS } from "./editor.actions";
+import { getEditorHerramientas, getEditorProductos } from "./editor.selector"
+import { addPoligono, addPoligonoSuccess, sendPoligono, sendPoligonoSuccess, uniquesLimited, uniquesLimitedSuccess, finishAreaSuccess, finishArea, editArea, editAreaSuccess } from "./editor.actions";
 import { Router } from '@angular/router';
 import { setLoading } from "src/app/pages/admin/state/admin.actions";
 import { savePlans, saveProductConfigurationsAll } from "src/app/pages/admin/products_configuration/state/productsConfiguration.actions";
@@ -830,120 +829,6 @@ export class EditorEffects{
             }),
             map(e => {
               this.store.dispatch(setLoading({ loading: false }))
-              return e;
-            })
-        )
-    });
-
-
-    /** CURVAS */
-    curvasOptimas$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(curvasOptimas),
-            withLatestFrom(
-                this.store.select(getCurvasFilter),
-                this.store.select(getCurvasBorrar)
-                ),
-            switchMap((action) => {
-                const { url, tipo, body, area } = action[0];
-                let curvasBorrar = action[2]
-                let bodyVariedades = `{"atributo":"variedad","activo":true}`;
-
-                return this.editorService.getCurvasOptimasPage({ url: url }, body).pipe(
-                    map((data) => {
-                        if(tipo==1){
-                            this.store.dispatch(uniques({areaId: area.id, datos: bodyVariedades}));
-                            this.store.dispatch(loadAreaProducts({area: area,tipo: 'asignar'}));
-                        }
-
-                        //Rellenar el checked
-                        if(data.datos){
-                            data.datos.forEach(element => {
-                              element.checked = curvasBorrar.some(curvaSelected=>curvaSelected.id==element.id)
-                            });
-                        }
-                        return curvasOptimasSuccess({ curvas: data, tipo: tipo });
-                    }), catchError(error=>{
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Fallo al pedir las curvas óptimas'
-                        });
-                        this.store.dispatch(setCurveFilter({ filter: undefined }));
-                        return of(curvasOptimasSuccess({ curvas: null, tipo: tipo }));
-                    })
-                );
-            }),
-            map(e => {
-            //   this.store.dispatch(setLoading({ loading: false }))
-              return e;
-            })
-        )
-    });
-
-    asignarCurvas$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(asignarCurvas),
-            exhaustMap((action) => {
-                const { area, productos, curvasSeleccionar } = action;
-
-                let idsCurvas = this.editorService.formatBodyAsignarCurvas(curvasSeleccionar);
-
-                this.store.dispatch(loadingCurves({active:true}));
-
-                return this.editorService.postCurvasOptimas(area.id, idsCurvas).pipe(
-                    map((data: Pagination) => {
-                        this.store.dispatch(curvasOptimas({url:'/rest/curvasoptimaspage', tipo:1, body:`{"areas": [${area.id}],"product": ["agua","lai","clorofila","ndvi"]}`,area:area}));
-                        this.store.dispatch(loadingCurves({active:false}));
-                        return asignarCurvasSuccess({ data:data });
-                    }), catchError(error=>{
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Fallo al asignar las curvas'
-                        });
-                        this.store.dispatch(loadingCurves({active:false}));
-                        return of(asignarCurvasSuccess({ data:error }));
-                    })
-                );
-            }),
-            map(e => {
-            //   this.store.dispatch(setLoading({ loading: false }))
-              return e;
-            })
-        )
-    });
-
-    borrarCurvas$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(borrarCurvas),
-            withLatestFrom(
-                this.store.select(getCurvasBorrar)
-            ),
-            exhaustMap((action) => {
-                const { area, productos, borrar } = action[0];
-                let curvasBorrar = action[1];
-
-                this.store.dispatch(loadingCurves({active:true}));
-
-                let body = this.editorService.formatBodyBorrarCurvas(borrar);
-
-                return this.editorService.deleteCurvasOptimas(area.id, body).pipe(
-                    map((data) => {
-                        this.store.dispatch(curvasOptimas({url:action[0].curvas.current, tipo:1, body:JSON.stringify({areas: [area.id],product: productos, filtro:action[0].variedad ? {variedad__in:[action[0].variedad]} : {}}),area:area}));
-                        this.store.dispatch(loadingCurves({active:false}));
-                        this.store.dispatch(addBorrarCurvas({ curvas: curvasBorrar , add: false}));
-                        return borrarCurvasSuccess({ data:data });
-                    }), catchError(error=>{
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Fallo al borrar las curvas'
-                        });
-                        this.store.dispatch(loadingCurves({active:false}));
-                        return of(borrarCurvasSuccess({ data:error }));
-                    })
-                );
-            }),
-            map(e => {
-            //   this.store.dispatch(setLoading({ loading: false }))
               return e;
             })
         )

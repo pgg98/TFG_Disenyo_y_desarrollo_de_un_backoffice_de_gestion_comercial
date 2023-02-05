@@ -11,7 +11,6 @@ import { Parcela2 } from '../interfaces/parcela';
 import { geojsonToWKT } from "@terraformer/wkt";
 import { OptionsCheckUser } from '../interfaces/OptionsCheckUser.interface';
 import Swal from 'sweetalert2';
-import { PaginationUrlOptions } from '../commons/enums/GenerarCurvas.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -429,76 +428,6 @@ export class EditorService {
     if(filtros.length>0) formateado = `{"cultivo":"${filtros[0]}"}`;
 
     return formateado;
-  }
-
-  /**
-   * Función que realiza la petición de la url que se pasa por parámetro
-   * @param url url para realizar una petición
-   * @param body posible filtro
-   * @returns datos
-   */
-  getCurvasOptimasPage(options: PaginationUrlOptions, body?: any){
-    let { url, page, limit, orderBy } = options;
-    let params = (page) ? (limit) ? (orderBy) ? `/${page}/${limit}/${orderBy}` : `/${page}/${limit}` : `/${page}` : '';
-    return this.http.post<any>(`${environment.databaseURL}${(url) ? url : `/rest/curvasoptimaspage${params}`}`, body, this.httpOptions);
-  }
-
-  /**
-   * Construir el body para postCurvasOptimas
-   * @param curvas Curvas que quieres asignar a otro área
-   * @returns Body de la petición
-   */
-  formatBodyAsignarCurvas(curvas){
-    let formateado = [];
-    let devolver;
-
-    curvas.map(value=>{
-      let aux = [];
-      aux.push(value.id);
-      formateado = formateado.concat(aux);
-    });
-
-    devolver = `{"curvas":[${formateado}]}`;
-
-    return devolver;
-  }
-
-  /**
-   * Asignar Curvas a otro área
-   * @param idArea Id del área al que se asignan las curvas
-   * @param body Body de la petición
-   * @returns Número de curvas asignadas correctamente
-   */
-  postCurvasOptimas(idArea,body){
-    return this.http.post(`${environment.databaseURL}/rest/areas/${idArea}/curvasOptimas`,body,this.httpOptions);
-  }
-
-  /**
-   * Construir el body para deleteCurvasOptimas
-   * @param curvas Curvas para borrar de un área
-   * @returns Body de la petición
-   */
-  formatBodyBorrarCurvas(curvas){
-    let formateado = [];
-    let devolver;
-    curvas.map(value=>{
-      formateado.push(value.id);
-    });
-    devolver = `{"id":[${formateado}]}`;
-    return devolver;
-  }
-
-  /**
-   * Borrar curvas de un área concreta
-   * @param idArea Id del área sobre la que se borran las curvas
-   * @param body Body de la petición
-   * @returns Nada
-   */
-  deleteCurvasOptimas(idArea,body){
-
-    let jsonBorradas = {headers: new HttpHeaders({'Content-Type': 'application/json'}), body: body};
-
-    return this.http.delete(`${environment.databaseURL}/rest/areas/${idArea}/curvasOptimas`, jsonBorradas);
   }
 
   /**
