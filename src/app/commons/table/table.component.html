@@ -9,7 +9,6 @@
     </div>
 </div>
 <div [ngClass]="{'height1': title != 'areas', 'height2': title == 'areas', 'height3': !(dangerFunction || warningFunction), 'table-responsive': true,'height4':title=='curvas'}" *ngIf="datos && datos.length > 0">
-    <!--<div class="table-responsive" *ngIf="datos && datos.length > 0">-->
     <table class="table">
         <thead>
             <tr>
@@ -22,7 +21,6 @@
                     </ng-container>
                 </th>
                 <th *ngIf="buttonsColumn && buttonsColumn.length > 0 && !buttons.includes(botonesTablaEnum.curvas)" class="sticky">Acciones</th>
-                <th *ngIf="buttons?.includes(botonesTablaEnum.curvas)" class="sticky"><input [disabled]="loadingCurvas" [checked]="allChecked" id="borraTodo" type="checkbox" class="btn btn-secondary btn-sm" (input)="selectCurva($event, [])"></th>
             </tr>
         </thead>
         <tbody *ngIf="!loading">
@@ -95,10 +93,6 @@
                         </div>
                         <div *ngIf="buttonsColumn.includes(botonesTablaEnum.seleccionar)" [id]="'select-' + i" disabled [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
                             <input type="checkbox" class="btn btn-secondary btn-sm" (input)="changeRowsSelected($event, element)">
-                        </div>
-                        <!-- Checkboxs para la tabla de Curvas -->
-                        <div *ngIf="buttons.includes(botonesTablaEnum.curvas)" [id]="'select-' + element['id']" disabled [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
-                            <input [id]="'checkbox-' + element['id']" type="checkbox" [checked]="element.checked" class="btn btn-secondary btn-sm" (input)="selectCurva($event, element)" [disabled]="loadingCurvas">
                         </div>
                     </div>
                 </td>

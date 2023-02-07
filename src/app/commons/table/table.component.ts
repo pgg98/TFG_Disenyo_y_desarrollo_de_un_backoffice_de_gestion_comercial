@@ -47,7 +47,6 @@ export class TableComponent implements OnInit, OnChanges {
   @Output() openNew: EventEmitter<any> = new EventEmitter();
   @Output() showSuperuserEvent: EventEmitter<any> = new EventEmitter();
   @Output() clickColumnButtonEvent: EventEmitter<any> = new EventEmitter();
-  @Output() selectCurvaEmitter:EventEmitter<any> = new EventEmitter();
 
   columns: string[] = [];
   previous_title: string = '';
@@ -241,18 +240,6 @@ export class TableComponent implements OnInit, OnChanges {
       confirmButtonText: 'Si'
     }).then((result) => {
       if (result.isConfirmed) {
-
-        /* var category = {["category"]:2};
-
-        let row;
-        if(event.path) {
-          row = parseInt(event.path.find(element => element.id.includes('rowConvetir')).id.split('-')[1]);
-        } else {
-          let target = (event.target) ? event.target : event.srcElement;
-          if(event.target.id.includes('rowConvetir')) row = target.id.split('-')[1];
-          else row = target.parentNode.id.split('-')[1];
-        } */
-
         var category = 2
 
         if(this.title=='Bajas'){
@@ -293,27 +280,6 @@ export class TableComponent implements OnInit, OnChanges {
       this.orderedBy = column;
       this.changeOrderedBy.emit(column);
     }
-  }
-
-  selectCurva(event, element){
-    if(element.length==0){
-      var newCurvas: any[] = Object.assign([], this.datos)
-      if(event.target.checked){
-        element = newCurvas
-      }else{
-        for (let i = 0; i < this.datos.length; i++) {
-          const checkbox = document.getElementById(
-            `checkbox-${this.datos[i]['id']}`,
-          ) as HTMLInputElement | null;
-          if(checkbox) checkbox.checked = false;
-        }
-        element = newCurvas
-      }
-    }else{
-      element = [element]
-    }
-    // Si aqui se manda un array vacío (como pasa al deseleccionar todas), se borran todas las seleccionadas de todas las páginas.
-    this.selectCurvaEmitter.emit({checked: event.target.checked, curva: element});
   }
 
   /**
