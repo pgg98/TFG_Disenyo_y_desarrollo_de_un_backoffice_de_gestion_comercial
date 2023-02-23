@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ProductsConfigurationEffects } from 'src/app/pages/admin/products_configuration/state/productsConfiguration.effects';
+import { PopoverModule } from 'ngx-smart-popover';
 
 @NgModule({
   providers: [
@@ -30,6 +31,7 @@ import { ProductsConfigurationEffects } from 'src/app/pages/admin/products_confi
     PipesModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    PopoverModule,
     StoreModule.forFeature(EDITOR_STATE_NAME, EditorReducer),
     EffectsModule.forFeature([EditorEffects, ProductsConfigurationEffects, ShareEffects]),
   ]

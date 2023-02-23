@@ -152,7 +152,15 @@
                         <div class="col-lg-4">
                             <mat-form-field>
                                 <!-- HECTÁREAS -->
-                                <mat-label>Hectáreas de la empresa</mat-label>
+                                <div style="display: flex; align-items: center;">
+                                    <mat-label>Hectáreas de la empresa</mat-label>
+                                    <mat-icon class="infoIcon" [popover]="popInfoHaEmpresa" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                                </div>
+                                <popover-content #popInfoHaEmpresa [closeOnClickOutside]="true">
+                                    <ng-container>
+                                        <span>El total de hectáreas potenciales que tiene la empresa (no tienen porqué ser todas las que están contratadas).</span>
+                                    </ng-container>
+                                </popover-content>
                                 <input type="number" class="inputs form-control" placeholder="Hectáreas de la empresa*" formControlName="ha_empresa" onKeyPress="if(this.value.length==6) return false;" max="999999" min="0" />
                                 <mat-error *ngIf="todoForm.controls['ha_empresa'].invalid && (!isNew || todoForm.controls['ha_empresa'].touched)">
                                     <span style="color:crimson; margin-left: 0.5em;">Hectáreas no válidas</span>
@@ -227,7 +235,15 @@
                     <div *ngIf="type==2 || type==3" class="row mb-3">
                         <div class="col-lg-4">
                             <mat-form-field appearance="fill">
-                                <mat-label>Fecha vencimiento</mat-label>
+                                <div style="display: flex; align-items: center;">
+                                    <mat-label>Fecha de fin de plataforma</mat-label>
+                                    <mat-icon class="infoIcon" [popover]="popInfoFinPlat" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                                </div>
+                                <popover-content #popInfoFinPlat [closeOnClickOutside]="true">
+                                    <ng-container>
+                                        <span>Fecha a partir de la cual los usuarios no podrán entrar a la plataforma y se dejarán de procesar sus áreas. Normalmente coincide con la fecha de final de contrato del cliente.</span>
+                                    </ng-container>
+                                </popover-content>
                                 <div class="d-flex align-items-center">
                                     <input placeholder="Fecha vencimiento*" class="inputs form-control" formControlName="fin_plataforma" style="cursor: pointer;" matInput [matDatepicker]="picker4" (focus)="picker4.open()" (click)="picker4.open()">
                                     <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
@@ -242,7 +258,15 @@
                         <div class="col-lg-4">
                             <!-- FIN ACTUALIZACION -->
                             <mat-form-field appearance="fill">
-                                <mat-label>Fin actualización</mat-label>
+                                <div style="display: flex; align-items: center;">
+                                    <mat-label>Fecha de fin de actualización</mat-label>
+                                    <mat-icon class="infoIcon" [popover]="popInfoFinAct" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                                </div>
+                                <popover-content #popInfoFinAct [closeOnClickOutside]="true">
+                                    <ng-container>
+                                        <span>Fecha a partir de la cual se dejan de actualizar las áreas del cliente. Esta fecha no puede ser superior a la fecha de fin de plataforma.</span>
+                                    </ng-container>
+                                </popover-content>
                                 <div class="d-flex align-items-center">
                                     <input class="inputs form-control" placeholder="Fin actualización*" formControlName="fin_actualizacion" style="cursor: pointer;" matInput [matDatepicker]="picker3" (focus)="picker3.open()" (click)="picker3.open()">
                                     <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
@@ -267,7 +291,15 @@
 
                         <div class="col-lg-4" *ngIf="(type == 2 || type == 3) && !isNew">
                             <!-- DESCARGAR RASTER CHECK -->
-                            <mat-label>Descargar raster</mat-label>
+                            <div style="display: flex; align-items: center;">
+                                <mat-label>Descargar raster</mat-label>
+                                <mat-icon class="infoIcon" [popover]="popInfoDescRast" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                            </div>
+                            <popover-content #popInfoDescRast [closeOnClickOutside]="true">
+                                <ng-container>
+                                    <span>Opción que permite a los usuarios del cliente descargar los modelos en formato tiff (con los valores del producto).</span>
+                                </ng-container>
+                            </popover-content>
                             <fieldset style="display: flex;">
                                 <div class="form-check">
                                     <input type="radio" name="descargar_raster" [value]="true" formControlName="descargar_raster" class="form-check-input" id="customControlValidation17" />
@@ -287,7 +319,15 @@
 
                         <div class="col-lg-4">
                             <!-- ALTA FRECUENCIA CHECK -->
-                            <mat-label>Alta frecuencia</mat-label>
+                            <div style="display: flex; align-items: center;">
+                                <mat-label>Alta frecuencia</mat-label>
+                                <mat-icon class="infoIcon" [popover]="popInfoAltFrec" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                            </div>
+                            <popover-content #popInfoAltFrec [closeOnClickOutside]="true">
+                                <ng-container>
+                                    <span>Si el cliente tiene contratados los servicios de Planet (imágenes de alta frecuencia). Solo marcar si se está seguro de que está contratado, ya que puede provocar la descarga de datos de Planet y su respectivo cobro.</span>
+                                </ng-container>
+                            </popover-content>
                             <fieldset style="display: flex;">
                                 <div class="form-check">
                                     <input type="radio" name="alta_freq" [value]="true" formControlName="alta_freq" class="form-check-input" id="customControlValidation7" (change)="changeValidatorHaContract()" />
@@ -302,7 +342,15 @@
 
                         <!-- HECTÁREAS DE PLANET -->
                         <div class="col-lg-4">
-                            <mat-label>Hectáreas contratadas de planet</mat-label>
+                            <div style="display: flex; align-items: center;">
+                                <mat-label>Hectáreas contratadas de planet</mat-label>
+                                <mat-icon class="infoIcon" [popover]="popInfoHaPlanet" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                            </div>
+                            <popover-content #popInfoHaPlanet [closeOnClickOutside]="true">
+                                <ng-container>
+                                    <span>El número de hectáreas de servicios de Planet (imágenes de alta frecuencia) que tiene contratadas el cliente. Solo marcar si se está seguro de que están contratadas, ya que puede provocar la descarga de datos de Planet y su respectivo cobro.</span>
+                                </ng-container>
+                            </popover-content>
                             <input [readonly]="!todoForm.get('alta_freq').value" type="number" class="inputs form-control" placeholder="Hectáreas contratadas de planet*" formControlName="ha_contrat" onKeyPress="if(this.value.length==6) return false;" />
                             <mat-error *ngIf="todoForm.controls['ha_contrat'].invalid && (!isNew || todoForm.controls['ha_contrat'].touched)">
                                 <span style="color:crimson; margin-left: 0.5em;">Hectáreas no válidas</span>
@@ -311,7 +359,15 @@
 
                         <!-- HECTÁREAS CONTRATADAS -->
                         <div class="col-lg-4">
-                            <mat-label>Hectáreas contratadas de sentinel</mat-label>
+                            <div style="display: flex; align-items: center;">
+                                <mat-label>Hectáreas contratadas de sentinel</mat-label>
+                                <mat-icon class="infoIcon" [popover]="popInfoHaSent" popoverPlacement="bottom" [popoverOnHover]="false">help</mat-icon>
+                            </div>
+                            <popover-content #popInfoHaSent [closeOnClickOutside]="true">
+                                <ng-container>
+                                    <span>Hectáreas de Sentinel contratadas por el cliente.</span>
+                                </ng-container>
+                            </popover-content>
                             <input type="number" class="inputs form-control" placeholder="Hectáreas contratadas de sentinel*" formControlName="ha_contrat_sent" onKeyPress="if(this.value.length==6) return false;" />
                             <mat-error *ngIf="todoForm.controls['ha_contrat_sent'].invalid && (!isNew || todoForm.controls['ha_contrat_sent'].touched)">
                                 <span style="color:crimson; margin-left: 0.5em;">Hectáreas no válidas</span>
@@ -478,7 +534,7 @@
                 <br>
                 <div class="movil" style="display: flex; justify-content: center; height: 67.2vh; margin-bottom: 1vh;">
                     <div class="leftDiv" style=" width:70%; justify-content: center;">
-                        <div style="display: flex; justify-content: center;">
+                        <div style="display: flex; justify-content: center; align-items: center;">
                             <div *ngIf="areasGET2" style="display: flex; justify-content:center;">
                                 <ng-select (change)="restart();showArea();" class="inputs" placeholder="Selecciona un área" [ngModelOptions]="{standalone: true}" [(ngModel)]="areaZafra">
                                     <ng-option [value]="null" disabled>Selecciona un área</ng-option>
@@ -488,8 +544,8 @@
                                 </ng-select>
                             </div>
                             <div style="margin-left: 2vh; align-items: center;">
-                                <p *ngIf="areaZafra && areaZafra.superficie">Superficie: {{areaZafra.superficie}} ha</p>
-                                <p *ngIf="areaZafra && !areaZafra.superficie">Superficie: 0 ha</p>
+                                <p *ngIf="areaZafra && areaZafra.superficie" style="margin-bottom: 0;">Superficie: {{areaZafra.superficie}} ha</p>
+                                <p *ngIf="areaZafra && !areaZafra.superficie" style="margin-bottom: 0;">Superficie: 0 ha</p>
                             </div>
                             <div *ngIf="areaZafra && areaZafra.terminado==false" style="margin-left: 2vh;">
                                 <button (click)="terminarPoligono()" [ngClass]="{'terminarDisable':finish==false || (!isNew && superuserToken === null)}" [disabled]="(!isNew && superuserToken === null)" type="button" class="btn btn-primary btn-sm">
