@@ -16,6 +16,10 @@ import { CommonService } from 'src/app/services/Common.service';
 import { IsButtonTable } from 'src/app/pipes/isButtonTable.pipe';
 import { IsStatusColumnTable } from 'src/app/pipes/isStatusColumnTable.pipe';
 import { MatDialog } from "@angular/material/dialog";
+import { addBorrarCurvas, curvasOptimasSuccess } from '../editor/state/editor.actions';
+import { Area } from 'src/app/interfaces/area';
+import { getCurvas, getCurvasBorrar, getLoadingCurvas } from '../editor/state/editor.selector';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
   selector: 'app-table',
@@ -47,6 +51,7 @@ export class TableComponent implements OnInit, OnChanges {
   @Output() openNew: EventEmitter<any> = new EventEmitter();
   @Output() showSuperuserEvent: EventEmitter<any> = new EventEmitter();
   @Output() clickColumnButtonEvent: EventEmitter<any> = new EventEmitter();
+  @Output() selectCurvaEmitter:EventEmitter<any> = new EventEmitter();
 
   columns: string[] = [];
   previous_title: string = '';
@@ -96,16 +101,66 @@ export class TableComponent implements OnInit, OnChanges {
       let titles = Object.entries(categories).filter(([key, value]) => typeof value === 'number' && value === this.categoryTitle + 1);
       this.nextTitle = ((titles && titles.length > 0) ? titles[0][0].toLocaleLowerCase() : -1)
     }
+
+    if(this.title=='curvas'){
+      this.store.select(getCurvasBorrar).pipe(takeUntil(this.ngUnsubscribe)).subscribe(curvasBorrar=>{
+        this.rowsSelected=curvasBorrar;
+        this.datos.map(value=>{
+          const checkbox = document.getElementById(
+            `checkbox-${value['id']}`,
+          ) as HTMLInputElement | null;
+          if(checkbox){checkbox.checked = false;}
+        });
+        for (let i = 0; i < this.rowsSelected.length; i++) {
+          for (let j = 0; j < this.datos.length; j++) {
+            if(this.rowsSelected[i]['id']==this.datos[j]['id']){
+              const checkbox = document.getElementById(
+                `checkbox-${this.rowsSelected[i]['id']}`,
+              ) as HTMLInputElement | null;
+              if(checkbox){checkbox.checked = true;}
+            }
+          }
+        }
+        let encontrado = 0;
+        this.rowsSelected.map(row=>{
+          this.datos.map(dato=>{
+            if(row['id']==dato['id']) encontrado++;
+          });
+        });
+        const checkbox2 = document.getElementById(
+          `borraTodo`,
+        ) as HTMLInputElement | null;
+        if(checkbox2 && encontrado==this.datos.length){checkbox2.checked = true;}
+        else if(checkbox2 && encontrado!=this.datos.length){checkbox2.checked = false;}
+      });
+
+      this.store.select(getCurvas).pipe(takeUntil(this.ngUnsubscribe)).subscribe(curvas=>{
+        if(curvas){
+          const checkbox = document.getElementById(
+            `borraTodo`,
+          ) as HTMLInputElement | null;
+          if(checkbox){checkbox.checked = this.allChecked;};
+        }
+      });
+
+      this.store.select(getLoadingCurvas)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(
+        value => {
+          this.loadingCurvas = value;
+        }
+      );
+    }
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes) {
     //if(this.previous_title !== this.title) this.orderedBy = '';
-    this.previous_title = this.title;
+    if(changes['title']) this.previous_title = this.title;
     this.rowsSelected = [];
-    this.initData();
+    this.initData(changes);
   }
 
-  initData() {
+  initData(changes?: Object) {
     if(this.data) {
       (this.title=='curvas') ? this.datos = this.data.datos : this.datos = (this.datos) ? this.datos : this.data.datos;
       this.limit = this.data.limit;
@@ -117,6 +172,7 @@ export class TableComponent implements OnInit, OnChanges {
       this.objects = (!this.datos) ? 0 : this.datos.length;
       this.totalPages = (!this.datos) ? 0 : 1;
     }
+
     this.columns = (this.datos && this.datos.length > 0) ? columnsTable[this.title.toLowerCase()].filter(element => !element.includes('__')) : [];
     // hay función warning
     if(this.warning) {
@@ -141,11 +197,18 @@ export class TableComponent implements OnInit, OnChanges {
       }
     }
     // filtrar botones que son de la columna acciones
-    this.buttonsColumn = this.buttons?.filter(e => ![botonesTabla.crear, botonesTabla.superuser].includes(e));
+    if(changes['buttons']) {
+      if(this.title.toLocaleLowerCase() === 'usuarios') {
+        this.buttonsColumn = this.buttons?.filter(e => ![botonesTabla.crear, botonesTabla.superuser].includes(e));
+      } else {
+        this.buttonsColumn = [...this.buttons?.filter(e => ![botonesTabla.crear].includes(e))];
+        this.buttons = [...this.buttons?.filter(e => ![botonesTabla.superuser].includes(e))];
+      }
+    }
   }
 
-  showSuperUser() {
-    this.showSuperuserEvent.emit();
+  showSuperUser(element) {
+    this.showSuperuserEvent.emit(element);
   }
 
   /**
@@ -227,7 +290,7 @@ export class TableComponent implements OnInit, OnChanges {
       title = `¿Quieres convertir a demo ${(!data['fk_cliente']['verificado']) ? ' y verificar el usuario' : ''}?`
       text = 'Si lo haces no hay vuelta atrás.'
     }else if(this.title == 'Bajas'){
-      title = `¿Quieres reconvertir a cliente?`
+      title = `¿Quieres volver a dar de alta el cliente?`
       text = 'El cliente podrá acceder de nuevo a la plataforma con los datos que tenía cuando se dio de baja.'
     }
     Swal.fire({
@@ -236,20 +299,28 @@ export class TableComponent implements OnInit, OnChanges {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si'
+      cancelButtonColor: this.title == 'Leads' ? '#d33' : '#3085d6',
+      confirmButtonText: this.title == 'Leads' ? 'Si' : 'Convertir a demo',
+      cancelButtonText: this.title == 'Leads' ? 'No' : 'Convertir a cliente',
+      allowOutsideClick: false,
+      showCloseButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        var category = 2
 
-        if(this.title=='Bajas'){
-          category = 3
-          data = {fk_cliente: data, id: null}
-        }
+        var category = 2
+        data = {fk_cliente: data, id: null}
 
         this.store.dispatch(loadSuperusers({ id: data['fk_cliente']['id'] }));
 
         this.changeToDemo.emit({object: data, category: category});
+      }else{
+        if(this.title=='Bajas' && String(result.dismiss)=='cancel'){
+          category = 3
+          data = {fk_cliente: data, id: null}
+          this.store.dispatch(loadSuperusers({ id: data['fk_cliente']['id'] }));
+
+          this.changeToDemo.emit({object: data, category: category});
+        }
       }
     })
   }
@@ -280,6 +351,27 @@ export class TableComponent implements OnInit, OnChanges {
       this.orderedBy = column;
       this.changeOrderedBy.emit(column);
     }
+  }
+
+  selectCurva(event, element){
+    if(element.length==0){
+      var newCurvas: any[] = Object.assign([], this.datos)
+      if(event.target.checked){
+        element = newCurvas
+      }else{
+        for (let i = 0; i < this.datos.length; i++) {
+          const checkbox = document.getElementById(
+            `checkbox-${this.datos[i]['id']}`,
+          ) as HTMLInputElement | null;
+          if(checkbox) checkbox.checked = false;
+        }
+        element = newCurvas
+      }
+    }else{
+      element = [element]
+    }
+    // Si aqui se manda un array vacío (como pasa al deseleccionar todas), se borran todas las seleccionadas de todas las páginas.
+    this.selectCurvaEmitter.emit({checked: event.target.checked, curva: element});
   }
 
   /**

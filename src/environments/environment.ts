@@ -11,6 +11,7 @@ export const environment = {
   powerbi: ['desarrollo', 'template_desarrollo'],
   bigMapsKey: 'AvIF6wukfXk6v4m9sGBwJZiKcy_XulknVCibu1NCJCwPlbIseiBjsdI6bMzu61Ff',
   celeryURL: 'http://ns383435.ip-94-23-252.eu:5566',
+  ip_app: 'https://pruebaweb.naxsolutions.com/'
 };
 
   /* production: false,

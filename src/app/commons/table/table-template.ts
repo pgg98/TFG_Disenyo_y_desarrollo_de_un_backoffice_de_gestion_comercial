@@ -20,6 +20,8 @@ import { categories } from "../enums/categories";
 import { MatDialog } from "@angular/material/dialog";
 import { TypeofColumns, TypesInColumns } from "../enums/typeofColumns.enum";
 import { AdminService } from "src/app/services/admin.service";
+import { CommonService } from "src/app/services/Common.service";
+import { environment } from "src/environments/environment";
 
 @Directive()
 export class TableTemplate implements OnInit, OnDestroy {
@@ -49,7 +51,8 @@ export class TableTemplate implements OnInit, OnDestroy {
     public router: Router,
     public route: ActivatedRoute,
     public dialog: MatDialog,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private commonService: CommonService
   ) { }
 
   ngOnInit(): void {
@@ -189,17 +192,35 @@ export class TableTemplate implements OnInit, OnDestroy {
   /**
    * Función que muestra un diálogo con el usuario y la contraseña del superusuario seleccionado
    */
-  showSuperUser() {
-    const superuser = (this.idCliente && this.superUsers) ? this.superUsers.find(element => element['fk_cliente']['id'] === this.idCliente) : undefined;
+  showSuperUser(clientEmitted) {
+    let superuser = (this.idCliente && this.superUsers) ? this.superUsers.find(element => element['fk_cliente']['id'] === this.idCliente) : undefined;
+    if(!superuser && clientEmitted) {
+      superuser = (this.superUsers) ? this.superUsers.find(element => element['fk_cliente']['id'] === clientEmitted['id']) : undefined;
+    }
+    superuser?.password && this.commonService.copyTextToClipboard(superuser.password);
     return (superuser) ?  Swal.fire({
       icon: 'info',
       title: 'Superuser',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Iniciar sesión en web',
+      cancelButtonText: 'Cerrar',
+      cancelButtonColor: '#f95959',
       html: `
       <div style="text-align: left;">
       <p><b>Usuario: </b>${superuser.user}</p>
       <b>Password: </b>${superuser.password}
+      </div>
+      <div class="alert alert-success mt-4">
+        ¡Contraseña copiada en el portapapeles!
       </div>`
-    }) :
+    }).then(value => {
+      if(value.isConfirmed) {
+        let { user, password } = superuser;
+        let win = window.open(`${environment.ip_app}/login?user=` + user + '&autologin=false', '_blank');
+      }
+    })
+    :
     Swal.fire({
       icon: 'error',
       title: 'Oops...',

@@ -90,11 +90,11 @@ const novedades = [
 ]
 
 export const buttonsEachTabla = {
-  leads: [botonesTablaEnum.editar, botonesTablaEnum.usuario, botonesTablaEnum.convertir, botonesTablaEnum.superuser],
-  demos: [botonesTablaEnum.editar, botonesTablaEnum.usuario, botonesTablaEnum.crear, botonesTablaEnum.superuser],
-  clientes: [botonesTablaEnum.editar, botonesTablaEnum.usuario, botonesTablaEnum.crear, botonesTablaEnum.superuser],
-  bajas: [botonesTablaEnum.usuario, botonesTablaEnum.superuser],
-  usuarios: [botonesTablaEnum.superuser],
+  leads: [botonesTablaEnum.editar, botonesTablaEnum.usuario, botonesTablaEnum.convertir, botonesTabla.superuser],
+  demos: [botonesTablaEnum.editar, botonesTablaEnum.usuario, botonesTablaEnum.crear, botonesTabla.superuser],
+  clientes: [botonesTablaEnum.editar, botonesTablaEnum.usuario, botonesTablaEnum.crear, botonesTabla.superuser],
+  bajas: [botonesTablaEnum.usuario, botonesTabla.superuser,botonesTablaEnum.convertir],
+  usuarios: [botonesTabla.superuser],
   areas: [
     botonesTablaEnum.editar,
     botonesTablaEnum.terminado,

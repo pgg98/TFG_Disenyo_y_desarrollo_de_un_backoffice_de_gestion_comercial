@@ -82,6 +82,9 @@
                         <div *ngIf="buttonsColumn.includes(botonesTablaEnum.usuario)" title="Ver usuarios" [id]="'user-' + i" (click)="senClient($event)" [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
                             <i class="fa fa-user"></i>
                         </div>
+                        <div *ngIf="buttonsColumn.includes(botonesTablaEnum.superuser)" title="Iniciar sesión" [id]="'super-' + i" (click)="showSuperUser(element)" [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
+                            <i class="fa fa-user-tie"></i>
+                        </div>
                         <div *ngIf="buttonsColumn.includes(botonesTablaEnum.convertir)" [id]="'rowConvetir-' + i" (click)="convertToDemo($event)" [title]="(nextTitle) ? 'Convertir a ' + nextTitle : 'Convertir'" [ngClass]="{'warning': (element | warningRow:warningFunction), 'danger': (element | warningRow:dangerFunction)}">
                             <i class="fa fa-share-square"></i>
                         </div>

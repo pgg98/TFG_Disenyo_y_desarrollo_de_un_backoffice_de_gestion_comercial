@@ -1,29 +1,10 @@
 <div class="animate__animated animate__fadeInRight animate__faster content">
     <div style="overflow-y: hidden;">
-        <app-filter-table [title]="title"
-        (obtenerTipo)="obtenerTipo($event)"
-        (filtrarTabla)="filtrar($event)"
-        [tipoInput]="tipoInput"
-        [actualFilter]="actualFilter"
-        [disabled]="disabledFilter || data && data.objects < 2"
-        ></app-filter-table>
+        <app-filter-table [title]="title" (obtenerTipo)="obtenerTipo($event)" (filtrarTabla)="filtrar($event)" [tipoInput]="tipoInput" [actualFilter]="actualFilter" [disabled]="disabledFilter || data && data.objects < 2"></app-filter-table>
         <div [ngClass]="{'card col-md-12': true, 'min-table': data && datos && datos.length > 0}">
-              <app-table
-                [data]="data"
-                [datos]="datos"
-                [showUsers]="showUsers"
-                [title]="title"
-                [buttons]="buttonsTable"
-                [page]="actualPage"
-                (editarDato)="editarDato($event)"
-                (sendUser)="showUsersClient($event)"
-                (changePage)="changePage($event)"
-                (changeLimit)="changeLimit($event)"
-                (changeOrderedBy)="changeOrder($event)"
-                (changeToDemo)="changeToDemo($event)"
-                (showSuperuserEvent)="showSuperUser()"
-                >
-              </app-table>
+            <app-table [data]="data" [datos]="datos" [showUsers]="showUsers" [title]="title" [buttons]="buttonsTable" [page]="actualPage" (editarDato)="editarDato($event)" (sendUser)="showUsersClient($event)" (changePage)="changePage($event)" (changeLimit)="changeLimit($event)"
+                (changeOrderedBy)="changeOrder($event)" (changeToDemo)="changeToDemo($event)" (showSuperuserEvent)="showSuperUser($event)">
+            </app-table>
         </div>
     </div>
 </div>

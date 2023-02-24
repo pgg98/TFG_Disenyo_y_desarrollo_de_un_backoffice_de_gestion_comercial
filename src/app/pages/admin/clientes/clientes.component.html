@@ -3,7 +3,7 @@
         <app-filter-table [title]="title" (obtenerTipo)="obtenerTipo($event)" (filtrarTabla)="filtrar($event)" [actualFilter]="actualFilter" [disabled]="disabledFilter || data && data.objects < 2" [tipoInput]="tipoInput"></app-filter-table>
         <div [ngClass]="{'card col-md-12': true, 'min-table': data && datos && datos.length > 0}">
             <app-table [data]="data" [showUsers]="showUsers" [title]="title" [datos]="datos" [buttons]="buttonsTable" [page]="actualPage" (editarDato)="editarDato($event)" (changePage)="changePage($event)" (sendUser)="showUsersClient($event)" (changeLimit)="changeLimit($event)"
-                (changeOrderedBy)="changeOrder($event)" (openNew)="newDato()" [warning]="[warningTitle, warningFunction]" [danger]="[dangerTitle, dangerFunction]" (showSuperuserEvent)="showSuperUser()">
+                (changeOrderedBy)="changeOrder($event)" (openNew)="newDato()" [warning]="[warningTitle, warningFunction]" [danger]="[dangerTitle, dangerFunction]" (showSuperuserEvent)="showSuperUser($event)">
             </app-table>
         </div>
     </div>
