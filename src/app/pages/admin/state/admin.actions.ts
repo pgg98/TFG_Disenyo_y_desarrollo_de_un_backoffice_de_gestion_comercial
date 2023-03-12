@@ -123,59 +123,12 @@ export const loadProccesses = createAction(
   props<{ processed?: boolean }>()
 );
 
-export const setProccesses = createAction(
-  SET_PROCCESSES,
-  props<{data: Tile[]}>()
-);
-
-export const moveProcess = createAction(
-  MOVE_PROCESS,
-  props<{id: number, idNext: number | null}>()
-);
-
-export const moveProcessUp = createAction(
-  MOVE_PROCESS_UP,
-  props<{id: number}>()
-);
-
-export const moveProcessDown = createAction(
-  MOVE_PROCESS_DOWN,
-  props<{id: number}>()
-);
-
-export const setClientsDemosAndClients = createAction(
-  SET_CLIENTS_DEMOS_AND_CLIENTS,
-  props<{clientes: Object[]}>()
-);
-
 export const GET_AREAS_CLIENTE= '[navigation] get areas cliente';
 export const GET_AREAS_CLIENTE_SUCCESS= '[navigation] get areas cliente success';
 
 export const getAreasCliente = createAction(
     GET_AREAS_CLIENTE,
     props<{cliente? :number}>()
-);
-export const getAreaClienteSuccess = createAction(
-    GET_AREAS_CLIENTE_SUCCESS,
-    props<{areas_cliente:Area[]}>()
-)
-
-export const CREATE_ALTA = '[altas] create alta';
-export const createAlta = createAction(
-  CREATE_ALTA,
-  props<{ newAlta: Object }>()
-);
-
-export const CREATE_ALTA_SUCCESS = '[altas] create alta success';
-export const createAltaSuccess = createAction(
-  CREATE_ALTA_SUCCESS,
-  props<{ result: boolean, message?: string }>()
-);
-
-export const DELETE_COLA = '[altas] delete cola';
-export const deleteCola = createAction(
-  DELETE_COLA,
-  props<{ ids: number[], processed?: boolean }>()
 );
 
 export const setKeyValueAdmin = createAction(

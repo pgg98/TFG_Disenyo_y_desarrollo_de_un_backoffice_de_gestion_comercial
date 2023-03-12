@@ -3,10 +3,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { environment} from '../../environments/environment'
 import { grafica, indicador } from '../interfaces/dashboard.interface';
-import { loadData } from '../pages/admin/state/admin.actions';
-import { getData } from '../pages/admin/state/admin.selector';
 import { AppState } from '../store/app.state';
-import { takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { categories } from '../commons/enums/categories';
 

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from '../guards/auth.guard';
-
 import { AdminLayoutComponent } from '../layouts/admin-layout/admin-layout.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { LeadsComponent } from './admin/leads/leads.component';
@@ -21,8 +20,7 @@ const routes: Routes = [
       loadChildren: () => import('src/app/pages/admin/dashboard/dashboard.module').then(m => m.DashboardModule),
       data: {
         rol: 'ROL_ADMIN',
-        titulo: 'Estadísticas',
-        // breadcrums: []
+        titulo: 'Estadísticas'
       },
     },
     {
@@ -32,8 +30,7 @@ const routes: Routes = [
       loadChildren: () => import('src/app/pages/admin/leads/leads.module').then(m => m.LeadsModule),
       data: {
         rol: 'ROL_ADMIN',
-        titulo: 'Leads',
-        // breadcrums: []
+        titulo: 'Leads'
       },
     },
     {
@@ -54,8 +51,7 @@ const routes: Routes = [
       loadChildren: () => import('src/app/pages/admin/demos/demos.module').then(m => m.DemosModule),
       data: {
         rol: 'ROL_ADMIN',
-        titulo: 'Demos',
-        // breadcrums: []
+        titulo: 'Demos'
       },
     },
     {
@@ -76,8 +72,7 @@ const routes: Routes = [
       loadChildren: () => import('src/app/pages/admin/clientes/clientes.module').then(m => m.ClientesModule),
       data: {
         rol: 'ROL_ADMIN',
-        titulo: 'Clientes',
-        // breadcrums: []
+        titulo: 'Clientes'
       },
     },
     {
@@ -98,8 +93,7 @@ const routes: Routes = [
       loadChildren: () => import('src/app/pages/admin/bajas/bajas.module').then(m => m.BajasModule),
       data: {
         rol: 'ROL_ADMIN',
-        titulo: 'Bajas',
-        // breadcrums: []
+        titulo: 'Bajas'
       },
     },
     { path: '**', redirectTo: 'dashboard'}

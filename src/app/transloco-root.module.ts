@@ -8,7 +8,6 @@ import {
   TranslocoModule
 } from '@ngneat/transloco';
 import { Injectable, isDevMode, NgModule } from '@angular/core';
-import { environment } from 'src/environments/environment';
 
 
 @Injectable({ providedIn: 'root' })
@@ -30,7 +29,6 @@ export class TranslocoHttpLoader implements TranslocoLoader {
         defaultLang: 'es',
         // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
-        //prodMode: !isDevMode(),
       })
     },
     { provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader }

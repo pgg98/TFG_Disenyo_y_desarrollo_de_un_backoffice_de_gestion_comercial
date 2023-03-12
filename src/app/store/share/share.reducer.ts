@@ -8,15 +8,6 @@ import { initialStateShared } from "./share.state";
 
 const _shareReducer = createReducer(
   initialStateShared,
-  /*
-  on(setLoadingSpinner,(state,action)=>{
-
-      return {
-          ...state,
-          showLoading: action.status
-      }
-  })
-  */
   on(setTitle,(state,action)=>{
 
     return {
@@ -51,7 +42,6 @@ export function clearState(reducer: ActionReducer<any>): ActionReducer<any> {
                 productsConfiguration: initialProductsConfigurationState
             }
 
-            //return reducer(state,action)
             return reducer(undefined, action)
         }
         return reducer(state, action);

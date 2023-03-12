@@ -1,14 +1,3 @@
-
-import { ActionReducerMap } from '@ngrx/store';
-/*
-import { UserReducer } from '../@pages/inicio/state/user.reducer';
-import { USER_STATE_NAME } from '../@pages/inicio/state/user.selector';
-import { UserState } from '../@pages/inicio/state/user.state';
-import { AuthReducer } from '../@pages/login/state/auth.reducer';
-import { NavigationReducer } from '../@pages/navigation/state/navigation.reducer';
-import { NAVIGATION_STATE_NAME } from '../@pages/navigation/state/navigation.selector';
-import { NavigationState } from '../@pages/navigation/state/navigation.state';
-*/
 import { SHARE_STATE_NAME } from './share/share.selector';
 import { ShareReducer } from './share/share.reducer';
 import { ShareState } from './share/share.state';
@@ -34,10 +23,6 @@ export interface AppState {
   [ADMIN_STATE_NAME]:AdminState,
   [EDITOR_STATE_NAME]: EditorState,
   [PRODUCTSCONFIGURATION_STATE_NAME]: ProductsConfigurationState
-  /*
-  [USER_STATE_NAME]:UserState,
-  [NAVIGATION_STATE_NAME]:NavigationState
-  */
 }
 
 export const appReducer = {
@@ -46,9 +31,5 @@ export const appReducer = {
   [ADMIN_STATE_NAME]:AdminReducer,
   [EDITOR_STATE_NAME]: EditorReducer,
   [PRODUCTSCONFIGURATION_STATE_NAME]: ProductsConfigurationReducer
-  /*
-  [USER_STATE_NAME]:UserReducer,
-  [NAVIGATION_STATE_NAME]:NavigationReducer,
-  */
 };
 

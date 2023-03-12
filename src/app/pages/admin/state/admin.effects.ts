@@ -10,7 +10,7 @@ import { AdminService } from "src/app/services/admin.service";
 import { EditorService } from "src/app/services/editor.service";
 import { AppState } from "src/app/store/app.state";
 import Swal from "sweetalert2";
-import { editCategorySuccess, getDataByUrl, loadData, borrarNovedades, loadUsersClient, setData, setFilter, setLoading, editCategory, saveClientData, loadClientsDemosAndClients, setClientsDemosAndClients, crearNovedad, crearNovedadSuccess, editarNovedad, editarNovedadSuccess, loadDataNovedades, loadDataProductosConf } from './admin.actions'
+import { editCategorySuccess, getDataByUrl, loadData, borrarNovedades, loadUsersClient, setData, setFilter, setLoading, editCategory, saveClientData, crearNovedad, crearNovedadSuccess, editarNovedad, editarNovedadSuccess, loadDataNovedades, loadDataProductosConf } from './admin.actions'
 import { getFilter } from "./admin.selector";
 import { DashboardService } from "src/app/services/dashboard.service";
 
@@ -139,22 +139,6 @@ export class AdminEffects{
     );
   });
 
-  loadDemosAndClients$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(loadClientsDemosAndClients),
-      exhaustMap((action) => {
-        return this.dashboardService.getClientes().pipe(
-          map((result) => {
-            const clients = this.dashboardService.getClientsAndDemos(JSON.parse(JSON.stringify(result)));
-            return setClientsDemosAndClients({ clientes: clients });
-          }),
-          catchError((error) => {
-            return of(setClientsDemosAndClients({ clientes: null }));
-          })
-        );
-      })
-    );
-  });
 
   changeCategory$ = createEffect(()=>{
     return this.actions$.pipe(

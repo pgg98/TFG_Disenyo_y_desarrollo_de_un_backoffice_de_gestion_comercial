@@ -154,7 +154,6 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes) {
-    //if(this.previous_title !== this.title) this.orderedBy = '';
     if(changes['title']) this.previous_title = this.title;
     this.rowsSelected = [];
     this.initData(changes);

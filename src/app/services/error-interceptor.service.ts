@@ -49,20 +49,6 @@ export class ErrorInterceptorService implements HttpInterceptor {
           }
         }
 
-        /* if (token && request.url.split('/')[2].search(environment.portip)==-1 && request.url.search('google')==-1) {
-          request = req.clone({
-              setHeaders: {
-                Authorization: `${ token.getToken() }`
-              }
-            });
-        } else if (localStorage.token && JSON.parse(localStorage.token).token) {
-          request = req.clone({
-              setHeaders: {
-                Authorization: `${ JSON.parse(localStorage.token).token }`
-              }
-            });
-        } */
-
         return next.handle(request).pipe(
           takeUntil(this.clearRequestService.onCancelPendingRequests()), //Cancelamos las peticiones pendientes en caso de que se quiera
           catchError(this.handleError<any>('', request))
@@ -91,14 +77,6 @@ export class ErrorInterceptorService implements HttpInterceptor {
         })
       }
 
-      /*
-      if(enabled){
-          return throwError(typeof error.error);
-      }else{
-          return of(result as T)
-      }
-      */
-
       var result: any = error.error;
       if(typeof error === 'string') {
         result = error;
@@ -110,12 +88,6 @@ export class ErrorInterceptorService implements HttpInterceptor {
         result = error;
       }
 
-      // else if(typeof error.error === 'object' && Object.keys(error.error).length > 0 &&
-      // Object.keys(error.error)[0] === '0') {
-      //   result = error.error.join('\n');
-      // } else if(typeof error.error === 'object' && Object.keys(error.error).length > 0) {
-      //   result = 'Error inesperado'
-      // }
       return this.specialUrls(result || 'Error inesperado', request, error);
     };
   }

@@ -17,7 +17,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ErrorInterceptorService } from './services/error-interceptor.service';
-import { DashboardEffects } from './pages/admin/dashboard/state/dashboard.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AdminEffects } from './pages/admin/state/admin.effects';
 import { MatSelectModule, MAT_SELECT_SCROLL_STRATEGY_PROVIDER } from '@angular/material/select';
@@ -37,9 +36,9 @@ export const metaReducers: MetaReducer<any>[] = [clearState];
 export const reducerProvider = { provide: REDUCERS_TOKEN, useValue: appReducer };
 
 export function preloadLang(transloco: TranslocoService) {
-  return function() {  
-    transloco.load('es').toPromise();   
-    transloco.load('en').toPromise();   
+  return function() {
+    transloco.load('es').toPromise();
+    transloco.load('en').toPromise();
   }
 }
 @NgModule({
@@ -56,7 +55,6 @@ export function preloadLang(transloco: TranslocoService) {
     CommonsModule,
     DragulaModule.forRoot(),
     EffectsModule.forRoot([AdminEffects, AuthEffects]),
-    //StoreModule.forRoot(appReducer),
     StoreModule.forRoot(REDUCERS_TOKEN, {metaReducers: [clearState]}),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states

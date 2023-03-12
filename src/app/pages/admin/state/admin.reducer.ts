@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { setData, setLoading, setShowUsers, setFilter, saveClientData, setProccesses, setClientsDemosAndClients, setKeyValueAdmin } from "./admin.actions";
+import { setData, setLoading, setShowUsers, setFilter, saveClientData, setKeyValueAdmin } from "./admin.actions";
 import { initialAdminState } from "./admin.state";
 
 const _adminReducer = createReducer(
@@ -40,35 +40,13 @@ const _adminReducer = createReducer(
       filter: filter
     }
   }),
-  on(setProccesses, (state, action) => {
-    const { data } = action;
-    const copyData = (action) ? JSON.parse(JSON.stringify(data)) : null;
-    return {
-      ...state,
-      procesos: copyData
-    }
-  }),
-  on(setClientsDemosAndClients, (state, action) => {
-    return {
-      ...state,
-      clientsDemosClients: action.clientes
-    }
-  }),
   on(setKeyValueAdmin, (state, action) => {
     const { key, value } = action;
     return {
       ...state,
       [key]: value
     }
-  }),
-
-  /**
-   * on(action, (state, action) => {
-   * return {
-   *  ... state
-   * }
-   * })
-   */
+  })
 );
 
 export const AdminReducer = (state, action) => {
