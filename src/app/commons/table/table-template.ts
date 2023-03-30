@@ -141,6 +141,7 @@ export class TableTemplate implements OnInit, OnDestroy {
    */
   editarDato(dato: Object) {
     const id = (dato['fk_cliente']) ? dato['fk_cliente']['id'] : dato['id'];
+
     // cargar token del superusuario a editar
     (!this.superUsers) ?
     this.store.dispatch(loadSuperusers({ id: id })) :
@@ -433,7 +434,7 @@ export class TableTemplate implements OnInit, OnDestroy {
 
   changeToDemo(object){
     let { object: client, category } = object;
-    this.store.dispatch(editCategory({ client: client , category: category}));
+    this.store.dispatch(editCategory({ client: client.fk_cliente.fk_cliente ? client.fk_cliente : client , category: category}));
   }
 
   /** DESTROY */

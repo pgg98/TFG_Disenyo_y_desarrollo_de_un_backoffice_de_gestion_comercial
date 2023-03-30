@@ -163,7 +163,7 @@ export class AdminEffects{
                     });
 
                     // Aquí hacemos la redirección al editor de Demo
-                    const id = client['id'];
+                    const id = client.fk_cliente.id;
 
                     // cargar token del superusuario a editar
                     this.store.dispatch(loadSuperuserToken({ id: id }));
